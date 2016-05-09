@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -29,7 +29,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 *******************************************************************************/
+#pragma once
+
 #include "fire.h" // Added by YC on 1/9/2014
+
 #define File(s) ((s) & 7)
 #define Rank(s) ((s) >> 3)
 #define From(s) (((s) >> 6) & 077)
@@ -73,16 +76,6 @@ typedef enum
 #define bBitboardP Position->bitboard[bEnumP]
 #define bBitboardOcc Position->bitboard[bEnumOcc]
 
-#ifdef OneDimensional
-#define ShiftLeft45 (LineShift + 0100 * Direction_h1a8)
-#define ShiftRight45 (LineShift + 0100 * Direction_a1h8)
-#define ShiftAttack (LineShift + 0100 * Direction_horz)
-#define ShiftLeft90 (LineShift + 0100 * Direction_vert)
-#define AttLeft45 (LineMask + 0100 * 0100 * Direction_h1a8)
-#define AttRight45 (LineMask + 0100 * 0100 * Direction_a1h8)
-#define AttNormal (LineMask + 0100 * 0100 * Direction_horz)
-#define AttLeft90 (LineMask + 0100 * 0100 * Direction_vert)
-#else
 #define ShiftLeft45 LineShift[Direction_h1a8]
 #define ShiftRight45 LineShift[Direction_a1h8]
 #define ShiftAttack LineShift[Direction_horz]
@@ -91,12 +84,12 @@ typedef enum
 #define AttRight45 LineMask[Direction_a1h8]
 #define AttNormal LineMask[Direction_horz]
 #define AttLeft90 LineMask[Direction_vert]
-#endif
+
 
 typedef struct
     {
-    uint64 mask, mult, shift;
-    uint64 *index;
+    uint64_t mask, mult, shift;
+    uint64_t *index;
     } typeMM;
 #define AttRocc(sq, OCC) RookMM[sq].index   \
   [((OCC & RookMM[sq].mask) * RookMM[sq].mult) >> RookMM[sq].shift]
@@ -111,22 +104,17 @@ typedef struct
 
 struct TP
     {
-    uint8 sq[64];
-    uint64 bitboard[16];
-    uint64 OccupiedBW,  _0, _1, _2;
-    uint8 XrayW[64], XrayB[64];
-    uint8 wtm, wKsq, bKsq, height;
+    uint8_t sq[64];
+    uint64_t bitboard[16];
+    uint64_t OccupiedBW,  _0, _1, _2;
+    uint8_t XrayW[64], XrayB[64];
+    uint8_t wtm, wKsq, bKsq, height;
     typeDynamic *Dyn, *DynRoot;
-    uint64 Stack[MaxStack], StackHeight;
-    uint64 nodes;
-
-#ifdef RobboBases
-    uint64 tbhits;
-#endif
-
-    uint8 cpu, rp;
+    uint64_t Stack[MaxStack], StackHeight;
+    uint64_t nodes;
+    uint8_t cpu, rp;
     bool stop, used;
-    MutexType padlock[1];
+    pthread_mutex_t padlock[1];
     int ChildCount;
     struct TP *parent, *children[MaxCPUs];
     SplitPoint *SplitPoint;

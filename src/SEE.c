@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -51,11 +51,11 @@ void SetValueArray()
     Value[6]=  Value[14] = RValue;
     Value[7] = Value[15] = QValue;
 
-/* TODO (matthew#5#): Remove this as it is useless, basically
+// TODO (matthew#5#): Remove this as it is useless, basically
 // Subsequent comment by NS modified by YC 12/03/2013:
-/* to maintain consistency: this function loads previously defined piece values into the Value array for use by SEE
-/* Ippolit uses constants (100, 325, 325, 500, 975) here no matter what values are defined for PValue/NValue/BValue/RValue/QValue in main() or fire.cfg
-/* this function is called when initializing material values: in material_value.c, see InitMaterialValue() */
+// to maintain consistency: this function loads previously defined piece values into the Value array for use by SEE
+// Ippolit uses constants (100, 325, 325, 500, 975) here no matter what values are defined for PValue/NValue/BValue/RValue/QValue in main()
+// this function is called when initializing material values: in material_value.c, see InitMaterialValue()
 
 }
 
@@ -65,10 +65,10 @@ void SetValueArray()
 #include "black.h"
 #endif
 
-bool MySEE(typePos* Position, uint32 move)
+bool MySEE(typePos* Position, uint32_t move)
 {
     int fr, to, PieceValue, CaptureValue, d, dir;
-    uint64 bit, cbf, mask, TableIndex[4], gcm = 0, T;
+    uint64_t bit, cbf, mask, TableIndex[4], gcm = 0, T;
     int b, w;
     T = MyXray & OppOccupied;
     fr = From(move);

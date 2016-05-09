@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -38,7 +38,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #define InCheck (Position->wtm ? WhiteInCheck : BlackInCheck)
 #define MaxMatePly 128
 
-void OutputBestMove(typePos* Position)
+static void OutputBestMove(typePos* Position)
     {
     int i, k;
     bool b;
@@ -47,17 +47,6 @@ void OutputBestMove(typePos* Position)
     if (!RootBestMove)
         {
         Send("bestmove NULL\n");
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "bestmove NULL\n");
-			fprintf(log_file, "\n");
-			close_log();
-			}
-#endif
-
         return;
         }
     Make(Position, RootBestMove);
@@ -96,17 +85,6 @@ void OutputBestMove(typePos* Position)
 	if (!BenchMarking)
     	Send("bestmove %s ponder %s\n", Notate(RootBestMove, String1[Position->cpu]),
 			Notate(PonderMove, String2[Position->cpu]));
-
-#ifdef Log
-	if (WriteLog)
-		{
-		log_file = fopen(log_filename, "a");
-		fprintf(log_file, "bestmove %s ponder %s\n", Notate(RootBestMove, String1[Position->cpu]),
-			Notate(PonderMove, String2[Position->cpu]));
-		fprintf(log_file, "\n");
-		close_log();
-		}
-#endif
     }
 static char *Modifier(int Alpha, int Value, int Beta, char *s)
     {
@@ -142,42 +120,28 @@ static char *cp_mate(int Value, char *s)
         sprintf(s, "cp %d", Value);
     return s;
     }
-void Information(typePos * Position, sint64 x, int Alpha, int Value, int Beta)
+void Information(typePos * Position, int64_t x, int Alpha, int Value, int Beta)
     {
-    uint64 t, nps, Nodes = 0;
+    uint64_t t, nps, Nodes = 0;
     int cpu, rp;
     int sd, k, move;
     char pv[0x100 << 3], *q;
     TransPVDeclare();
     TransDeclare();
-    uint64 HashStack[256];
+    uint64_t HashStack[256];
     int i;
     int cnt = 0;
     bool B;
     int mpv;
 
-#ifdef RobboBases
-    uint64 TBHits = 0;
-#endif
-
     if (x < 0)
         return;
     DoOutput = true;
-	for (cpu = 0; cpu < NumThreads; cpu++)
+	for (cpu = 0; cpu < Threads; cpu++)
 		for (rp = 0; rp < RPperCPU; rp++)
 			 Nodes += RootPosition[cpu][rp].nodes;
-
-#ifdef RobboBases
-		if (UseRobboBases)
-			{
-			for (cpu = 0; cpu < NumThreads; cpu++)
-				for (rp = 0; rp < RPperCPU; rp++)
-					TBHits += RootPosition[cpu][rp].tbhits;
-			}
-#endif
-
     sd = 0;
-    memset(HashStack, 0, (sizeof(uint64) << 8));
+    memset(HashStack, 0, (sizeof(uint64_t) << 8));
     t = x / 1000;
     if (t == 0)
         nps = 0;
@@ -257,41 +221,11 @@ void Information(typePos * Position, sint64 x, int Alpha, int Value, int Beta)
             else
                 Undo(Position, Position->Dyn->move);
             }
-		if (!BenchMarking)	
-			{			
-        	Send("info multipv %d time " Type64Bit " nodes " Type64Bit " nps " Type64Bit, mpv + 1, t, Nodes, nps * 1000);
-
-#ifdef RobboBases
-			if (UseRobboBases)
-				{
-				if (TBHitInfo && TBHits)
-					Send (" tbhits " Type64Bit, TBHits);
-				}
-#endif
-
-        	Send(" score %s%s depth %d seldepth %d pv %s\n", cp_mate(MPV[mpv].Value, String2[Position->cpu]),
-				Modifier(MPV[mpv].alpha, MPV[mpv].Value, MPV[mpv].beta, String3[Position->cpu]), MPV[mpv].depth >> 1, seldepth, pv);
-
-#ifdef Log
-			if (WriteLog)
-				{
-				log_file = fopen(log_filename, "a");
-				fprintf(log_file, "info multipv %d time " Type64Bit " nodes " Type64Bit
-					" nps " Type64Bit, mpv + 1, t, Nodes, nps * 1000);
-
-#ifdef RobboBases
-				if (UseRobboBases)
-					{
-					if (TBHitInfo && TBHits)
-						fprintf(log_file, " tbhits " Type64Bit, TBHits);
-					}
-#endif
-
-				fprintf(log_file, " score %s%s depth %d seldepth %d pv %s\n", cp_mate(MPV[mpv].Value, String2[Position->cpu]),
-					Modifier(MPV[mpv].alpha, MPV[mpv].Value, MPV[mpv].beta, String3[Position->cpu]), MPV[mpv].depth >> 1, seldepth, pv);
-				close_log();
-				}
-#endif
+		if (!BenchMarking)
+			{
+        	Send("info multipv %d time %lld nodes %lld nps  %lld", mpv + 1, t, Nodes, nps * 1000);
+        	Send(" score %s%s depth %d pv %s\n", cp_mate(MPV[mpv].Value, String2[Position->cpu]),
+				Modifier(MPV[mpv].alpha, MPV[mpv].Value, MPV[mpv].beta, String3[Position->cpu]), MPV[mpv].depth >> 1, pv);
         	}
 		}
     }
@@ -334,8 +268,7 @@ void Search(typePos * Position)
             (p + 1)->move = 0;
             }
         }
-    if (Position->StackHeight == -1)
-       Position->StackHeight = 0;
+    Position->StackHeight = 0;
     SkipRepCheck:
     memcpy(Position->DynRoot + 1, Position->Dyn, sizeof(typeDynamic));
     memset(Position->DynRoot + 2, 0, 254 * sizeof(typeDynamic));
@@ -351,27 +284,10 @@ void Search(typePos * Position)
     for (i = 0; i < 256; i++)
         (Position->DynRoot + i)->age = GlobalAge;
 
-#ifdef RobboBases
-	if (UseRobboBases)
-		{
-		SearchRobboBases = true;
-		SuppressInput = true;
-		if (RobboMake(Position))
-			goto INFINITY;
-		SuppressInput = false;
-		}
-#endif
-
     RootPrevious = -ValueMate;
     EasyMove = false;
     JumpIsSet = true;
     Pos = Position;
-
-#ifdef RobboBases
-	if (UseRobboBases)
-		RootPosition0->tbhits = 0;
-#endif
-
     SMPStub();
     Pos = &RootPosition[0][0];
     z = setjmp(J);
@@ -399,11 +315,6 @@ void Search(typePos * Position)
             }
         }
     Information(Position, GetClock() - StartClock, -32767, RootScore, 32767);
-
-#ifdef RobboBases
-    INFINITY:
-#endif
-
     SuppressInput = false;
     if (DoInfinite && !Stop)
         {

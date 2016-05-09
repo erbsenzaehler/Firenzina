@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -36,12 +36,12 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #define Infinity 0x7ffffffffffffff
 #define StrTok(p) p = strtok (NULL, " ")
 
-static sint64 LastMessage;
-static sint64 AbsoluteTime, DesiredTime, Increment;
+static int64_t LastMessage;
+static int64_t AbsoluteTime, DesiredTime, Increment;
 static int Depth;
 static bool NewPonderhit;
 jmp_buf J;
-static sint64 BattleTime, EasyTime, NormalTime;
+static int64_t BattleTime, EasyTime, NormalTime;
 
 void PonderHit()
     {
@@ -62,53 +62,21 @@ void HaltSearch(int d, int rank)
         if (d == 0)
             EndSMP();
     }
-
-static int DoHashFull(uint64 x)
+void Info(int64_t x)
     {
-	int d;
-	float c = 0.499f;
-	typeHash* Trans;
-	for (d = 0; d < 1000; d++)
-		{
-		x = (0xeca97530f2468bd1) * x + 0x43218765edcb09af;
-		Trans = HashPointer0 (x);
-		if (Trans->hash && Trans->age == GlobalAge)
-			c += 1.0f;
-		}
-  return (int) c;
-    }
-
-void Info(sint64 x)
-    {
-    uint64 t, nps, Nodes = 0;
-	int cpu, rp, hash_full = 0;
+    uint64_t t, nps, Nodes = 0;
+	int cpu, rp;
     clock_t u;
-
-#ifdef RobboBases
-    uint64 TBHits = 0;
-#endif
 
     if (x < 0)
         return;
 	DoOutput = true;
 
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         for (rp = 0; rp < RPperCPU; rp++)
             Nodes += RootPosition[cpu][rp].nodes;
 
-#ifdef RobboBases
-	if (UseRobboBases)
-		{
-		for (cpu = 0; cpu < NumThreads; cpu++)
-			for (rp = 0; rp < RPperCPU; rp++)
-				TBHits += RootPosition[cpu][rp].tbhits;
-		}
-#endif
-
     u = clock();
-
-    if (HashFullInfo)
-		hash_full = DoHashFull (((sint64) u) + x + Nodes);
     t = x / 1000;
 
     if (t == 0)
@@ -118,47 +86,7 @@ void Info(sint64 x)
     u = ProcessClock() - CPUtime;
 
 	if (NPSInfo)
-		Send("info time " Type64Bit " nodes " Type64Bit " nps " Type64Bit"\n", t, Nodes, nps * 1000);
-
-	if (HashFullInfo && hash_full)
-		Send ("info hashfull %d\n", hash_full);
-
-#ifdef RobboBases
-	if (UseRobboBases)
-		{
-		if (TBHitInfo && TBHits)
-			Send("info tbhits " Type64Bit"\n", TBHits);
-		}
-#endif
-
-	if (CPULoadInfo)
-    	Send("info cpuload %d\n", (int) MIN(((double) u / (double) ((x - LastMessage) * NumCPUs) * 1000.0), 1000));
-
-#ifdef Log
-	if (WriteLog)
-		{
-		log_file = fopen(log_filename, "a");
-
-		if (NPSInfo)
-			fprintf(log_file, "info time " Type64Bit " nodes " Type64Bit " nps " Type64Bit"\n", t, Nodes, nps * 1000);
-
-		if (HashFullInfo && hash_full)
-			fprintf(log_file, "info hashfull %d\n", hash_full);
-
-#ifdef RobboBases
-		if (UseRobboBases)
-			{
-			if (TBHitInfo && TBHits)
-				fprintf(log_file, " tbhits " Type64Bit, TBHits);
-			}
-#endif
-
-		if (CPULoadInfo)
-			fprintf(log_file, "info cpuload %d\n",
-				(int)MIN(((double)u / (double)((x - LastMessage) * NumCPUs) * 1000.0), 1000));
-		close_log();
-		}
-#endif
+		Send("info time %lld nodes %lld nps %lld\n", t, Nodes, nps * 1000);
 
     LastMessage = x;
     CPUtime += u;
@@ -166,7 +94,7 @@ void Info(sint64 x)
 
 void CheckDone(typePos * Position, int d)
     {
-    sint64 x;
+    int64_t x;
     if (!RootBestMove)
         return;
     if (SMPAllHalt)
@@ -220,23 +148,18 @@ void CheckDone(typePos * Position, int d)
     if (d)
         return;
 
-#ifdef Bench
+
 	if (!BenchMarking)
 		{
-#endif
-
 		while (TryInput())
 			{
 			Input(Position);
 			if (d == 0 && !SMPisActive)
 				return;
 			}
-#ifdef Bench
 		}
-#endif
-
 	}
-void TimeManager(sint64 Time, sint64 OppTime, sint64 Increment, int mtg)
+void TimeManager(int64_t Time, int64_t OppTime, int64_t Increment, int mtg)
     {
 	if (mtg)
         {
@@ -270,10 +193,9 @@ void TimeManager(sint64 Time, sint64 OppTime, sint64 Increment, int mtg)
 void InitSearch(typePos * Position, char *str)
     {
     char *p;
-    sint64 wtime = Infinity, btime = Infinity, winc = 0, binc = 0, Time, OppTime, mtg = 0;
+    int64_t wtime = Infinity, btime = Infinity, winc = 0, binc = 0, Time, OppTime, mtg = 0;
     int sm = 0;
     Depth = 255;
-	seldepth = 0;
     AbsoluteTime = DesiredTime = Infinity;
     Stop = false;
     DoInfinite = false;

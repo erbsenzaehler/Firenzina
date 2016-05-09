@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -41,7 +41,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #include "black.h"
 #endif
 
-int MyExclude(typePos *Position, int value, int depth, uint32 Move)
+int MyExclude(typePos *Position, int value, int depth, uint32_t Move)
     {
     int move, i;
     TransDeclare();
@@ -49,7 +49,7 @@ int MyExclude(typePos *Position, int value, int depth, uint32 Move)
     int v, extend, new_depth, move_is_check;
     typeNext NextMove[1];
     typeDynamic *Pos0 = Position->Dyn;
-    uint64 zob = Position->Dyn->Hash;
+    uint64_t zob = Position->Dyn->Hash;
     int to, fr;
     int Reduction;
 	bool Split;
@@ -94,7 +94,7 @@ int MyExclude(typePos *Position, int value, int depth, uint32 Move)
                 }
             }
         }
-		
+
     NextMove->trans_move = trans_move;
     if (Pos0->Value >= value && MyNull)
         {
@@ -238,13 +238,13 @@ int MyExclude(typePos *Position, int value, int depth, uint32 Move)
     HashUpper(zob, depth, v);
     return(v);
     }
-int MyExcludeCheck(typePos *Position, int value, int depth, uint32 Move)
+int MyExcludeCheck(typePos *Position, int value, int depth, uint32_t Move)
     {
     int move, cnt;
     int trans_depth, move_depth = 0, trans_move = 0, Value, new_depth, v, i;
     TransDeclare();
     typeMoveList List[256], *list, *p, *q;
-    uint64 zob = Position->Dyn->Hash;
+    uint64_t zob = Position->Dyn->Hash;
     int best_value;
     typeDynamic *Pos0 = Position->Dyn;
     bool Gen;
@@ -286,15 +286,6 @@ int MyExcludeCheck(typePos *Position, int value, int depth, uint32 Move)
                 }
             }
         }
-
-#ifdef FischerRandom
-    if (Chess960)
-        {
-		if (MoveIsOO(trans_move))
-			trans_move = MoveNone;
-		}
-#endif
-
     if (trans_move && !MyOK(Position, trans_move))
         trans_move = MoveNone;
     best_value = HeightMultiplier * Height(Position) - ValueMate;

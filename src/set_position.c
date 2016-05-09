@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -35,7 +35,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #define InCheck  (Position->wtm ?             \
 	(Position->Dyn->bAtt & wBitboardK) : \
 	(Position->Dyn->wAtt & bBitboardK))
-		  
+
 static char StartPosition[80] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 char *EmitFen(typePos * Position, char *ARR)
@@ -223,102 +223,39 @@ static char *ReadFEN(typePos* Position, char *I)
 	if (!strcmp(i, "-"))
 		Position->Dyn->oo = 0;
 
-#ifdef FischerRandom
-    if (!Chess960)
+    if (i[0] == 'K' || i[0] == 'Q' || i[0] == 'k' || i[0] == 'q')
         {
-#endif
-
-		if (i[0] == 'K' || i[0] == 'Q' || i[0] == 'k' || i[0] == 'q')
-			{
-			if (!strcmp(i, "KQkq"))
-				Position->Dyn->oo = 15;
-			else if (!strcmp(i, "Qkq"))
-				Position->Dyn->oo = 14;
-			else if (!strcmp(i, "Kkq"))
-				Position->Dyn->oo = 13;
-			else if (!strcmp(i, "kq"))
-				Position->Dyn->oo = 12;
-			else if (!strcmp(i, "KQq"))
-				Position->Dyn->oo = 11;
-			else if (!strcmp(i, "Qq"))
-				Position->Dyn->oo = 10;
-			else if (!strcmp(i, "Kq"))
-				Position->Dyn->oo = 9;
-			else if (!strcmp(i, "q"))
-				Position->Dyn->oo = 8;
-			else if (!strcmp(i, "KQk"))
-				Position->Dyn->oo = 7;
-			else if (!strcmp(i, "Qk"))
-				Position->Dyn->oo = 6;
-			else if (!strcmp(i, "Kk"))
-				Position->Dyn->oo = 5;
-			else if (!strcmp(i, "k"))
-				Position->Dyn->oo = 4;
-			else if (!strcmp(i, "KQ"))
-				Position->Dyn->oo = 3;
-			else if (!strcmp(i, "Q"))
-				Position->Dyn->oo = 2;
-			else if (!strcmp(i, "K"))
-				Position->Dyn->oo = 1;
+        if (!strcmp(i, "KQkq"))
+            Position->Dyn->oo = 15;
+        else if (!strcmp(i, "Qkq"))
+            Position->Dyn->oo = 14;
+        else if (!strcmp(i, "Kkq"))
+            Position->Dyn->oo = 13;
+        else if (!strcmp(i, "kq"))
+            Position->Dyn->oo = 12;
+        else if (!strcmp(i, "KQq"))
+            Position->Dyn->oo = 11;
+        else if (!strcmp(i, "Qq"))
+            Position->Dyn->oo = 10;
+        else if (!strcmp(i, "Kq"))
+            Position->Dyn->oo = 9;
+        else if (!strcmp(i, "q"))
+            Position->Dyn->oo = 8;
+        else if (!strcmp(i, "KQk"))
+            Position->Dyn->oo = 7;
+        else if (!strcmp(i, "Qk"))
+            Position->Dyn->oo = 6;
+        else if (!strcmp(i, "Kk"))
+            Position->Dyn->oo = 5;
+        else if (!strcmp(i, "k"))
+            Position->Dyn->oo = 4;
+        else if (!strcmp(i, "KQ"))
+            Position->Dyn->oo = 3;
+        else if (!strcmp(i, "Q"))
+            Position->Dyn->oo = 2;
+        else if (!strcmp(i, "K"))
+            Position->Dyn->oo = 1;
 			}
-
-#ifdef FischerRandom
-		}
-    else
-        {
-        int u;
-       Position->Dyn->oo = 0;
-        Chess960KingRookFile = Chess960QueenRookFile = Chess960KingFile = 0xff;
-
-        for ( u = 0; u < strlen(i); u++ )
-            {
-            int e, c = i[u] - 'A';
-
-            if (c >= 0 && c <= 7 && Position->sq[c] == wEnumR)
-                {
-                for ( e = 0; e < 8; e++ )
-                    if (Position->sq[e] == wEnumK)
-                        {
-                        Chess960KingFile = e;
-
-                        if (e > c)
-                            {
-                           Position->Dyn->oo |= 0x2;
-                            Chess960QueenRookFile = c;
-                            }
-
-                        if (e < c)
-                            {
-                           Position->Dyn->oo |= 0x1;
-                            Chess960KingRookFile = c;
-                            }
-                        }
-                }
-            c = i[u] - 'a';
-
-            if (c >= 0 && c <= 7 && Position->sq[070 + c] == bEnumR)
-                {
-                for ( e = 0; e < 8; e++ )
-                    if (Position->sq[070 + e] == bEnumK)
-                        {
-                        Chess960KingFile = e;
-
-                        if (e > c)
-                            {
-                           Position->Dyn->oo |= 0x8;
-                            Chess960QueenRookFile = c;
-                            }
-
-                        if (e < c)
-                            {
-                           Position->Dyn->oo |= 0x4;
-                            Chess960KingRookFile = c;
-                            }
-                        }
-                }
-            }
-        }
-#endif
 
 	if (Position->Dyn->oo == 16)
 		ErrorFen("FEN oo %s\n", i);
@@ -358,7 +295,7 @@ static char *ReadFEN(typePos* Position, char *I)
 	if (I[-1] != 0 && I[0] >= '0' && I[0] <= '9')
 		{
 		sscanf(I, "%s", i);
-		Position->Dyn->reversible = (uint8)atoi(i);
+		Position->Dyn->reversible = (uint8_t)atoi(i);
 		I += strlen(i) + 1;
 		if (I[-1] != 0 && I[0] >= '0' && I[0] <= '9')
 			{
@@ -375,7 +312,7 @@ static void ReadMoves(typePos* Position, char* I)
     typeMoveList List[256], *list;
     char T[256];
     int i;
-    uint32 full;
+    uint32_t full;
     while (I[0])
         {
         Mobility(Position);
@@ -438,13 +375,7 @@ void InitPosition(typePos* Position, char* I)
         I += strlen("fen") + 1;
         I = ReadFEN(Position, I);
         }
-   Position->StackHeight = 0;
-
-#ifdef FischerRandom		
-    if (Chess960)	
-		ReFuel960Castle();
-#endif
-
+    Position->StackHeight = 0;
     if (J && I[0] == 'm')
         {
         sscanf(I, "%s", i);

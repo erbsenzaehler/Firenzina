@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -61,7 +61,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 		MoveAdd (List, FlagPromB | (sq << 6) | to, bEnumP, to, 0); }
 #define OK(x)                                                       \
 	(((x & 0x7fff) != s1) && ((x & 0x7fff) != s2) && ((x & 0x7fff) != s3))
-void SortOrdinary(typeMoveList *m1, typeMoveList *m2, uint32 s1, uint32 s2, uint32 s3)
+void SortOrdinary(typeMoveList *m1, typeMoveList *m2, uint32_t s1, uint32_t s2, uint32_t s3)
     {
     typeMoveList *p, *q;
     int move;
@@ -115,7 +115,7 @@ void SortOrdinary(typeMoveList *m1, typeMoveList *m2, uint32 s1, uint32 s2, uint
    }                                                   \
       q--;                                             \
       q->move = move; }
-typeMoveList *EvasionMoves(typePos *Position, typeMoveList *list, uint64 mask)
+typeMoveList *EvasionMoves(typePos *Position, typeMoveList *list, uint64_t mask)
     {
     if (Position->wtm)
         return WhiteEvasions(Position, list, mask);
@@ -127,7 +127,7 @@ typeMoveList *OrdinaryMoves(typePos *Position, typeMoveList *list)
         return WhiteOrdinary(Position, list);
     return BlackOrdinary(Position, list);
     }
-typeMoveList *CaptureMoves(typePos *Position, typeMoveList *list, uint64 mask)
+typeMoveList *CaptureMoves(typePos *Position, typeMoveList *list, uint64_t mask)
     {
     if (Position->wtm)
         return WhiteCaptures(Position, list, mask & bBitboardOcc);
@@ -138,9 +138,9 @@ typeMoveList *CaptureMoves(typePos *Position, typeMoveList *list, uint64 mask)
 #else
 #include "black.h"
 #endif
-typeMoveList *MyEvasion(typePos *Position, typeMoveList *List, uint64 c2)
+typeMoveList *MyEvasion(typePos *Position, typeMoveList *List, uint64_t c2)
     {
-    uint64 U, T, att, mask;
+    uint64_t U, T, att, mask;
     int sq, to, fr, c, king, pi;
     king = MyKingSq;
     att = MyKingCheck;
@@ -253,7 +253,7 @@ typeMoveList *MyEvasion(typePos *Position, typeMoveList *List, uint64 c2)
     }
 typeMoveList *MyPositionalGain(typePos *Position, typeMoveList *List, int av)
     {
-    uint64 empty = ~Position->OccupiedBW, U, T;
+    uint64_t empty = ~Position->OccupiedBW, U, T;
     int to, sq;
     typeMoveList *sm, *p, *q;
     int move;
@@ -302,9 +302,9 @@ typeMoveList *MyPositionalGain(typePos *Position, typeMoveList *List, int av)
     Sort;
     return List;
     }
-typeMoveList *MyCapture(typePos *Position, typeMoveList *List, uint64 mask)
+typeMoveList *MyCapture(typePos *Position, typeMoveList *List, uint64_t mask)
     {
-    uint64 U, T, AttR, AttB;
+    uint64_t U, T, AttR, AttB;
     int sq, to, c;
     to = Position->Dyn->ep;
     if (to)
@@ -396,95 +396,12 @@ typeMoveList *MyCapture(typePos *Position, typeMoveList *List, uint64 mask)
     }
 typeMoveList *MyOrdinary(typePos *Position, typeMoveList *List)
     {
-    uint64 empty = ~Position->OccupiedBW, U, T, Rook, Bishop, Pawn;
+    uint64_t empty = ~Position->OccupiedBW, U, T, Rook, Bishop, Pawn;
     int to, sq, opks = OppKingSq;
-
-#ifdef FischerRandom
-    if (Chess960)
-        {
-        if (CastleOO)
-            {
-            uint64 T = 0;
-            int f;
-
-            for ( f = Chess960KingFile; f <= FG; f++ )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            if (T & OppAttacked)
-                goto NO_OO;
-            T = 0;
-
-            for ( f = Chess960KingRookFile + 1; f <= FF; f++ )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            for ( f = Chess960KingRookFile - 1; f >= FF; f-- )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            for ( f = Chess960KingFile + 1; f <= FG; f++ )
-                T |= SqSet[f + 8 * NumberRank1];
-            T &= SqClear[Chess960KingFile + 8 * NumberRank1];
-            T &= SqClear[Chess960KingRookFile + 8 * NumberRank1];
-
-            if (T & Position->OccupiedBW)
-                goto NO_OO;
-            MoveAdd(List,
-                FlagOO | (Chess960KingRookFile + 8 * NumberRank1) | ((Chess960KingFile + 8 * NumberRank1) << 6),
-                EnumMyK, Chess960KingRookFile + 8 * NumberRank1, 0);
-            NO_OO:
-            ;
-            }
-        if (CastleOOO)
-            {
-            uint64 T = 0;
-            int f;
-
-            for ( f = Chess960KingFile; f <= FC; f++ )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            for ( f = Chess960KingFile; f >= FC; f-- )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            if (T & OppAttacked)
-                goto NO_OOO;
-            T = 0;
-
-            for ( f = Chess960QueenRookFile + 1; f <= FD; f++ )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            for ( f = Chess960QueenRookFile - 1; f >= FD; f-- )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            for ( f = Chess960KingFile + 1; f <= FC; f++ )
-                T |= SqSet[f + 8 * NumberRank1];
-
-            for ( f = Chess960KingFile - 1; f >= FC; f-- )
-                T |= SqSet[f + 8 * NumberRank1];
-            T &= SqClear[Chess960KingFile + 8 * NumberRank1];
-            T &= SqClear[Chess960QueenRookFile + 8 * NumberRank1];
-
-            if (T & Position->OccupiedBW)
-                goto NO_OOO;
-            MoveAdd(List,
-                FlagOO | (Chess960QueenRookFile + 8 * NumberRank1) | ((Chess960KingFile + 8 * NumberRank1) << 6),
-                EnumMyK, Chess960QueenRookFile + 8 * NumberRank1, 0);
-            NO_OOO:
-            ;
-            }
-        }
-    else
-        {
 	if (CastleOO && ((Position->OccupiedBW | OppAttacked) & WhiteF1G1) == 0)
 		MoveAdd(List, FlagOO | (WhiteE1 << 6) | WhiteG1, EnumMyK, WhiteG1, 0);
 	if (CastleOOO && (Position->OccupiedBW &WhiteB1C1D1) == 0 && (OppAttacked &WhiteC1D1) == 0)
 		MoveAdd(List, FlagOO | (WhiteE1 << 6) | WhiteC1, EnumMyK, WhiteC1, 0);
-        }
-#else
-	if (CastleOO && ((Position->OccupiedBW | OppAttacked) & WhiteF1G1) == 0)
-		MoveAdd(List, FlagOO | (WhiteE1 << 6) | WhiteG1, EnumMyK, WhiteG1, 0);
-	if (CastleOOO && (Position->OccupiedBW &WhiteB1C1D1) == 0 && (OppAttacked &WhiteC1D1) == 0)
-		MoveAdd(List, FlagOO | (WhiteE1 << 6) | WhiteC1, EnumMyK, WhiteC1, 0);
-#endif
-
     Pawn = MyAttackedPawns[opks];
     if (BitboardMyQ | BitboardMyR)
         Rook = AttR(opks);
@@ -540,13 +457,13 @@ typeMoveList *MyOrdinary(typePos *Position, typeMoveList *List)
     List->move = 0;
     return List;
     }
-typeMoveList *MyQuietChecks(typePos *Position, typeMoveList *List, uint64 mask)
+typeMoveList *MyQuietChecks(typePos *Position, typeMoveList *List, uint64_t mask)
     {
     int opks, king, sq, to, fr, pi;
-    uint64 U, T, V;
+    uint64_t U, T, V;
     typeMoveList *list;
-    uint32 move;
-    uint64 gcm;
+    uint32_t move;
+    uint64_t gcm;
     gcm = ~MyXray;
     mask = (~mask) &~MyOccupied;
     ;

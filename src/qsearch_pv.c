@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -42,10 +42,10 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 int MyPVQsearch(typePos *Position, int Alpha, int Beta, int depth)
     {
     int i;
-    uint32 good_move = 0, trans_move = 0, move, BadCaps[64];
-    uint32 trans_depth, move_depth = 0;
+    uint32_t good_move = 0, trans_move = 0, move, BadCaps[64];
+    uint32_t trans_depth, move_depth = 0;
     int best_value, Value;
-    uint64 Target;
+    uint64_t Target;
     typeMoveList List[256], *list, *p, *q;
     int Temp, v;
     typeDynamic *Pos0 = Position->Dyn;
@@ -280,9 +280,9 @@ int MyPVQsearch(typePos *Position, int Alpha, int Beta, int depth)
 int MyPVQsearchCheck(typePos *Position, int Alpha, int Beta, int depth)
     {
     int i;
-    uint32 trans_move = 0, good_move = 0, move, Temp;
+    uint32_t trans_move = 0, good_move = 0, move, Temp;
     int best_value, Value;
-    uint64 Target;
+    uint64_t Target;
     typeMoveList List[256], *list, *p, *q;
     int v, trans_depth, move_depth = 0;
     typeDynamic *Pos0 = Position->Dyn;

@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -29,11 +29,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 *******************************************************************************/
+#pragma once
 
 typedef struct
 	{
-	uint64 RandKey;
-	uint8 pad[56];
+	uint64_t RandKey;
+	uint8_t pad[56];
 	} RAND;
 static RAND Rand[MaxCPUs];
 
@@ -192,52 +193,52 @@ static RAND Rand[MaxCPUs];
 #define RQCrampFile Score(0, 5)
 #define RQCrampFileOpen Score(5, 15)
 
-static const uint32 wBxray[16] =
+static const uint32_t wBxray[16] =
     {
     xrayB0, xrayBmP, xrayBmN, xrayBmK, xrayBmB, xrayBmB, xrayBmR, xrayBmQ,
 	xrayB0, xrayBoP, xrayBoN, xrayBoK, xrayBoB, xrayBoB, xrayBoR, xrayBoQ
     };
-static const uint32 bBxray[16] =
+static const uint32_t bBxray[16] =
     {
     xrayB0, xrayBoP, xrayBoN, xrayBoK, xrayBoB, xrayBoB, xrayBoR, xrayBoQ,
 	xrayB0, xrayBmP, xrayBmN, xrayBmK, xrayBmB, xrayBmB, xrayBmR, xrayBmQ
     };
-static const uint32 wRxray[16] =
+static const uint32_t wRxray[16] =
     {
     xrayR0, xrayRmP, xrayRmN, xrayRmK, xrayRmB, xrayRmB, xrayRmR, xrayRmQ,
 	xrayR0, xrayRoP, xrayRoN, xrayRoK, xrayRoB, xrayRoB, xrayRoR, xrayRoQ
     };
-static const uint32 bRxray[16] =
+static const uint32_t bRxray[16] =
     {
     xrayR0, xrayRoP, xrayRoN, xrayRoK, xrayRoB, xrayRoB, xrayRoR, xrayRoQ,
 	xrayR0, xrayRmP, xrayRmN, xrayRmK, xrayRmB, xrayRmB, xrayRmR, xrayRmQ
     };
-static const uint32 wQxrayD[16] =
+static const uint32_t wQxrayD[16] =
     {
     xQ0d, xQmPd, xQmNd, xQmKd, xQmBd, xQmBd, xQmRd, xQmQd,
 	xQ0d, xQoPd, xQoNd, xQoKd, xQoBd, xQoBd, xQoRd, xQoQd
     };
-static const uint32 bQxrayD[16] =
+static const uint32_t bQxrayD[16] =
     {
     xQ0d, xQoPd, xQoNd, xQoKd, xQoBd, xQoBd, xQoRd, xQoQd,
 	xQ0d, xQmPd, xQmNd, xQmKd, xQmBd, xQmBd, xQmRd, xQmQd
     };
-static const uint32 wQxrayO[16] =
+static const uint32_t wQxrayO[16] =
     {
     xQ0hv, xQmPhv, xQmNhv, xQmKhv, xQmBhv, xQmBhv, xQmRhv, xQmQhv,
 	xQ0hv, xQoPhv, xQoNhv, xQoKhv, xQoBhv, xQoBhv, xQoRhv, xQoQhv
     };
-static const uint32 bQxrayO[16] =
+static const uint32_t bQxrayO[16] =
     {
     xQ0hv, xQoPhv, xQoNhv, xQoKhv, xQoBhv, xQoBhv, xQoRhv, xQoQhv,
 	xQ0hv, xQmPhv, xQmNhv, xQmKhv, xQmBhv, xQmBhv, xQmRhv, xQmQhv
     };
-static const uint32 KingSafetyMult[16] =
+static const uint32_t KingSafetyMult[16] =
 	{
 	0, 1, 4, 9, 16, 25, 36, 49,
 	50, 50, 50, 50, 50, 50, 50, 50
 	};
-static const uint8 BishopTrapSq[64] =
+static const uint8_t BishopTrapSq[64] =
     {
 	0x00,  C2,  0x00, 0x00, 0x00, 0x00,  F2,  0x00,
 	B3,  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  G3,
@@ -248,7 +249,7 @@ static const uint8 BishopTrapSq[64] =
 	B6,  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  G6,
 	0x00,  C7,  0x00, 0x00, 0x00, 0x00,  F7,  0x00
 	};
-static const uint8 GoodBishopTrapSq[64] =
+static const uint8_t GoodBishopTrapSq[64] =
     {
 	0x00,  D1,  0x00, 0x00, 0x00, 0x00,  E1,  0x00,
 	C2,  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  F2,
@@ -259,7 +260,7 @@ static const uint8 GoodBishopTrapSq[64] =
 	C7,  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  F7,
 	0x00,  D8,  0x00, 0x00, 0x00, 0x00,  E8,  0x00
     };
-static const uint64 RookTrapped[64] =
+static const uint64_t RookTrapped[64] =
 	{
 	  0, Bitboard2 (A1, A2), Bitboard2 (A1, A2) | Bitboard2 (B1, B2), 0,
 	  0, Bitboard2 (H1, H2) | Bitboard2 (G1, G2), Bitboard2 (H1, H2), 0,
@@ -272,27 +273,27 @@ static const uint64 RookTrapped[64] =
 	  0, Bitboard2 (A8, A7), Bitboard2 (A8, A7) | Bitboard2 (B8, B7), 0,
 	  0, Bitboard2 (H8, H7) | Bitboard2 (G8, G7), Bitboard2 (H8, H7), 0
 	};
-static const uint64 CrampFile[8] =
+static const uint64_t CrampFile[8] =
 	{
 	FileB, 0, 0, 0, 0, 0, 0, FileG
 	};
-static const uint32 RankQueenEnd[8] =
+static const uint32_t RankQueenEnd[8] =
 	{
 	0, 0, 0, Score(5, 5), Score(10, 10), Score(20, 20), Score(40, 40), 0
 	};
-static const uint32 PassedPawnMeClear[8] =
+static const uint32_t PassedPawnMeClear[8] =
 	{
 	0, 0, 0, Score(0, 0), Score(0, 0), Score(3, 5), Score(5, 10), 0
 	};
-static const uint32 PassedPawnOppClear[8] =
+static const uint32_t PassedPawnOppClear[8] =
 	{
 	0, 0, 0, Score(0, 0), Score(5, 10), Score(15, 30), Score(25, 50)
 	};
-static const uint32 PassedPawnCanMove[8] =
+static const uint32_t PassedPawnCanMove[8] =
 	{
 	0, 0, 0, Score(1, 2), Score(2, 3), Score(3, 5), Score(5, 10), 0
 	};
-static const uint32 PassedPawnIsFree[8] =
+static const uint32_t PassedPawnIsFree[8] =
 	{
 	0, 0, 0, Score(0, 0), Score(5, 10), Score(10, 20), Score(20, 40)
 	};

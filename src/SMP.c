@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -34,7 +34,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #define DoLocked(x) { Lock (SMP); (x); UnLock (SMP); }
 #define MaxSplit 8
 #include <signal.h>
-volatile uint64 SMPFree;
+volatile uint64_t SMPFree;
 typePos
 * volatile Working[MaxCPUs];
 void SMPStub()
@@ -49,30 +49,24 @@ void SMPStub()
     memcpy(RP00->DynRoot, RootPosition0->DynRoot, (sizeof(typeDynamic) << 1));
     RP00->Dyn = RP00->DynRoot + 1;
     h = RootPosition0->StackHeight;
-    memcpy(RP00->Stack, RootPosition0->Stack, h * sizeof(uint64));
+    memcpy(RP00->Stack, RootPosition0->Stack, h * sizeof(uint64_t));
     RP00->StackHeight = h;
     RP00->ChildCount = 0;
     RP00->parent = NULL;
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         RP00->children[cpu] = NULL;
     SMPAllHalt = false;
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         for (rp = 0; rp < RPperCPU; rp++)
             {
             RootPosition[cpu][rp].used = false;
             RootPosition[cpu][rp].stop = false;
             RootPosition[cpu][rp].nodes = 0;
-
-#ifdef RobboBases
-		if (UseRobboBases)
-            RootPosition[cpu][rp].tbhits = 0;
-#endif
-
             }
     RootPosition[0][0].used = true;
     for (sp = 0; sp < MaxSP; sp++)
         RootSP[sp].active = false;
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         Working[cpu] = NULL;
     NullParent->ChildCount = 123;
     RP00->SplitPoint = NULL;
@@ -88,12 +82,12 @@ void SMPStub()
         }
     SearchIsDone = false;
     }
-static void SMPGoodHistory(typePos* Pos, uint32 m, SplitPoint* sp)
+static void SMPGoodHistory(typePos* Pos, uint32_t m, SplitPoint* sp)
     {
     int sv = HistoryValue(Pos, m);
     HistoryValue(Pos, m) = sv +(((0xff00 - sv) * sp->depth) >> 8);
     }
-void FailHigh(SplitPoint* sp, typePos* Position, uint32 m)
+void FailHigh(SplitPoint* sp, typePos* Position, uint32_t m)
     {
     int cpu;
     Lock(sp->splock);
@@ -116,20 +110,14 @@ void FailHigh(SplitPoint* sp, typePos* Position, uint32 m)
     Lock(Position->parent->padlock);
     if (!Position->stop)
         {
-        for (cpu = 0; cpu < NumThreads; cpu++)
+        for (cpu = 0; cpu < Threads; cpu++)
             if (Position->parent->children[cpu] && cpu != Position->cpu)
                 ThreadHalt(Position->parent->children[cpu]);
         }
     UnLock(Position->parent->padlock);
     UnLock(SMP);
     }
-
-#if defined(__GNUC__)
-#define INLINE inline
-#endif
-
-
-static INLINE void SMPBadHistory(typePos* Position, uint32 m, SplitPoint* sp)
+static inline void SMPBadHistory(typePos* Position, uint32_t m, SplitPoint* sp)
     {
     if ((Position->Dyn + 1)->cp == 0 && MoveHistory(m))
         {
@@ -188,7 +176,7 @@ void search(typePos* Position)
     sp->childs--;
     if (!sp->tot && !sp->childs && !Position->stop)
         {
-        uint32 m = sp->good_move;
+        uint32_t m = sp->good_move;
         if (m)
             {
             HashExact(Position, m, sp->depth, sp->value, FlagExact);
@@ -217,9 +205,6 @@ void ThreadStall(typePos* Parent, int cpu)
             {
             if (Die[cpu])
                 return;
-#if defined(_WIN32) || defined(_WIN64)
-            WaitForLock(PThreadCondWait[cpu], PThreadCondMutex[cpu]);
-#else
             Lock(&PThreadCondMutex[cpu]);
             if (Working[cpu] || !Parent->ChildCount)
                 {
@@ -228,7 +213,6 @@ void ThreadStall(typePos* Parent, int cpu)
                 }
             Wait(&PThreadCondWait[cpu], &PThreadCondMutex[cpu]);
             UnLock(&PThreadCondMutex[cpu]);
-#endif
             if (Die[cpu])
                 return;
             }
@@ -266,7 +250,7 @@ void ThreadHalt(typePos* Pos)
     int n;
     Lock(Pos->padlock);
     Pos->stop = true;
-    for (n = 0; n < NumThreads; n++)
+    for (n = 0; n < Threads; n++)
         {
         if (Pos->children[n] != NULL)
             ThreadHalt(Pos->children[n]);
@@ -292,7 +276,7 @@ static void CopyPosition(typePos* Child, typePos* Parent)
     memcpy(Child->DynRoot, Parent->Dyn - 1, (sizeof(typeDynamic) << 1));
     Child->Dyn = Child->DynRoot + 1;
     h = Parent->StackHeight;
-    memcpy(Child->Stack, Parent->Stack, h * sizeof(uint64));
+    memcpy(Child->Stack, Parent->Stack, h * sizeof(uint64_t));
     Child->StackHeight = h;
     }
 typePos* CopyToChild(int icpu, typePos* Parent)
@@ -302,7 +286,7 @@ typePos* CopyToChild(int icpu, typePos* Parent)
     Child = GetPosition(icpu);
     if (!Child)
         return NULL;
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         Child->children[cpu] = NULL;
     CopyPosition(Child, Parent);
     return Child;
@@ -326,10 +310,10 @@ bool SMPSplit(typePos* Position, typeNext *NextMove, int depth, int beta, int al
     typePos *Child;
     SplitPoint *sp;
     Lock(SMP);
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         if (!Working[cpu])
             break;
-    if (Position->stop || cpu == NumThreads)
+    if (Position->stop || cpu == Threads)
         {
         UnLock(SMP);
         return false;
@@ -360,7 +344,7 @@ bool SMPSplit(typePos* Position, typeNext *NextMove, int depth, int beta, int al
     sp->active = true;
     UnLock(sp->splock);
     split = 0;
-    for (cpu = 0; cpu < NumThreads && split < MaxSplit; cpu++)
+    for (cpu = 0; cpu < Threads && split < MaxSplit; cpu++)
         {
        Position->children[cpu] = NULL;
         if (Working[cpu] == NULL)
@@ -386,7 +370,7 @@ bool SMPSplit(typePos* Position, typeNext *NextMove, int depth, int beta, int al
         UnLock(SMP);
         return false;
         }
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         {
         if (Position->children[cpu])
             {

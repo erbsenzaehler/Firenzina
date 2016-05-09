@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -48,7 +48,7 @@ void MyTop(typePos * Position)
     {
     int i, depth, A, L, U, v, Value = 0, trans_depth;
     int move_depth = 0, ExactDepth = 0;
-    uint32 move, HashMove = 0, ExactMove = 0, to, fr;
+    uint32_t move, HashMove = 0, ExactMove = 0, to, fr;
     typeMoveList *mlx, *ml, ML[256];
     typeRootMoveList *p, *q, *list;
     TransDeclare();
@@ -57,12 +57,6 @@ void MyTop(typePos * Position)
         {
         0, 1, 3, 0, 3, 3, 5, 9, 0, 1, 3, 0, 3, 3, 5, 9
         };
-
-#ifdef RobboBases
-    bool TriplePeek = false;
-    int TriplePeekValue = -ValueInfinity;
-#endif
-
     if (Analysing)
         {
         MyTopAnalysis(Position);
@@ -116,18 +110,6 @@ void MyTop(typePos * Position)
         RootMoveList[i].move = ML[i].move;
     RootMoveList[ml - ML].move = MoveNone;
     list = RootMoveList + (ml - ML);
-
-#ifdef RobboBases
-	if (UseRobboBases)
-		{
-		if (TripleBasesLoaded && TripleCondition(Position) && TripleValue(Position, &v, false, true))
-			{
-			TriplePeek = true;
-			TriplePeekValue = v;
-			}
-		}
-#endif
-
     q = RootMoveList;
     for (p = RootMoveList; p < list; p++)
         {
@@ -139,64 +121,12 @@ void MyTop(typePos * Position)
             Undo(Position, move);
             continue;
             }
-#ifdef RobboBases
-        else if (UseRobboBases && TripleBasesLoaded && TriplePeek && TripleValue(Position, &v, false, true))
-            {
-            v = -v;
-            if (TriplePeekValue > 0 && v > 0)
-                (q++)->move = move & 0x7fff;
-            if (TriplePeekValue == 0 && v >= 0)
-                {
-                if (v > 0)
-                    TriplePeekValue = 1;
-                (q++)->move = move & 0x7fff;
-                }
-            if (TriplePeekValue < 0)
-                {
-                (q++)->move = move & 0x7fff;
-                if (v > 0)
-                    TriplePeekValue = 1;
-                if (v == 0)
-                    TriplePeekValue = 0;
-                }
-            }
-#endif
-
         else
             (q++)->move = move & 0x7fff;
         Undo(Position, move);
         }
     q->move = 0;
     list = q;
-
-#ifdef RobboBases
-	if (UseRobboBases)
-		{
-		q = RootMoveList;
-		for (p = RootMoveList; p < list; p++)
-			{
-			move = p->move & 0x7fff;
-			Make(Position, move);
-			Mobility(Position);
-			if (UseRobboBases && TripleBasesLoaded && TriplePeek && TripleValue(Position, &v, false, true))
-				{
-				v = -v;
-				if (TriplePeekValue > 0 && v > 0)
-					(q++)->move = move & 0x7fff;
-				if (TriplePeekValue == 0 && v >= 0)
-					(q++)->move = move & 0x7fff;
-				if (TriplePeekValue < 0)
-					(q++)->move = move & 0x7fff;
-				}
-			else
-				(q++)->move = move & 0x7fff;
-			Undo(Position, move);
-			}
-		q->move = 0;
-		list = q;
-		}
-#endif
-
     for (p = RootMoveList; p < list; p++)
         {
         if (Position->sq[To(p->move)])
@@ -234,6 +164,7 @@ void MyTop(typePos * Position)
         RootDepth = 0;
         return;
         }
+
     for (depth = 2; depth <= MaxDepth; depth += 2)
         {
         BadMove = false;

@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -34,7 +34,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 #define Distance(i, j)(MAX (FileDistance (i, j), RankDistance (i, j)))
 
-const uint8 Left90[64] =
+const uint8_t Left90[64] =
     {
     7, 15, 23, 31, 39, 47, 55, 63,
     6, 14, 22, 30, 38, 46, 54, 62,
@@ -45,7 +45,7 @@ const uint8 Left90[64] =
     1, 9, 17, 25, 33, 41, 49, 57,
     0, 8, 16, 24, 32, 40, 48, 56
     };
-const uint8 Left45[64] =
+const uint8_t Left45[64] =
     {
     0, 2, 5, 9, 14, 20, 27, 35,
     1, 4, 8, 13, 19, 26, 34, 42,
@@ -56,7 +56,7 @@ const uint8 Left45[64] =
     21, 29, 37, 44, 50, 55, 59, 62,
     28, 36, 43, 49, 54, 58, 61, 63
     };
-const uint8 Right45[64] =
+const uint8_t Right45[64] =
     {
     28, 21, 15, 10, 6, 3, 1, 0,
     36, 29, 22, 16, 11, 7, 4, 2,
@@ -91,16 +91,16 @@ static int Hop[8] =
     {
     6, 10, 15, 17, -6, -10, -15, -17
     };
-static uint64 randkey = 1;
-uint16 RAND16()
+static uint64_t randkey = 1;
+uint16_t RAND16()
     {
     randkey = randkey * 8765432181103515245ULL + 1234567891ULL;
     return((randkey >> 32) % 65536);
     }
-uint64 GetRand()
+uint64_t GetRand()
     {
-    return(((uint64)RAND16()) << 48) | (((uint64)RAND16()) << 32) |
-		(((uint64)RAND16()) << 16) | (((uint64)RAND16()) << 0);
+    return(((uint64_t)RAND16()) << 48) | (((uint64_t)RAND16()) << 32) |
+		(((uint64_t)RAND16()) << 16) | (((uint64_t)RAND16()) << 0);
     }
 
 void RandHash()
@@ -135,7 +135,7 @@ void RandHash()
 void InitArrays()
     {
     int sq2, i, sq = 0, j, file, rank, king, dir;
-    uint64 T;
+    uint64_t T;
 
     for (i = 1; i <= 8; i++)
         for (j = 1; j <= i; j++)

@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -33,8 +33,8 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #include "fire.h"
 #define MaxAge 256
 
-static uint64 PVHashSize = 0x20000;
-static uint64 HashSize;
+static uint64_t PVHashSize = 0x20000;
+static uint64_t HashSize;
 static bool PVFlagHashInit = false;
 static bool LargePVHash = false;
 static bool LargeEvalHash = false;
@@ -46,11 +46,6 @@ static int LargeEvalNumber = -1;
 static int LargePV = -1;
 static int LargePawns = -1;
 static int Large = -1;
-
-#ifdef RobboBases
-static bool LargeTripleHash = false;
-static int LargeTripleNumber = -1;
-#endif
 
 int PVHashClear()
     {
@@ -105,38 +100,6 @@ void QuitLargePawns()
     {
     FreeMem(PawnHash, &LargePawns, &LargePawnsHash);
     }
-
-#ifdef RobboBases
-void TripleHashClear()
-    {
-    int c;
-    for (c = 0; c < TripleHashSize; c++)
-        TripleHash[c] = 0;
-    }
-int InitTripleHash(int mb)
-    {
-    uint64 size;
-    if (mb > 4096)
-        mb = 4096;
-    if (mb < 1)
-        mb = 1;
-    TripleHashSize = ((1ULL << BSR(mb)) << 20) / sizeof(uint64);
-    TripleHashMask = TripleHashSize - 1;
-    mb = (TripleHashSize * sizeof(uint64)) >> 20;
-    if (TripleHash)
-        FreeMem(TripleHash, &LargeTripleNumber, &LargeTripleHash);
-    size = TripleHashSize * sizeof(uint64);
-	size = MAX((1 << 21), size);
-    CreateMem(&TripleHash, 64, size, &LargeTripleNumber, &LargeTripleHash, "TripleHash");
-    TripleHashClear();
-    return mb;
-    }
-void QuitTripleHash()
-    {
-    FreeMem(TripleHash, &LargeTripleNumber, &LargeTripleHash);
-    }
-#endif
-
 void EvalHashClear()
     {
     int c;
@@ -145,23 +108,18 @@ void EvalHashClear()
     }
 int InitEvalHash(int kb)
     {
-    uint64 size;
+    uint64_t size;
     if (kb > 1048576)
         kb = 1048576;
     if (kb < 1)
         kb = 1;
-    EvalHashSize = ((1ULL << BSR(kb)) << 10) / sizeof(uint64);
+    EvalHashSize = ((1ULL << BSR(kb)) << 10) / sizeof(uint64_t);
     EvalHashMask = EvalHashSize - 1;
-    kb = (EvalHashSize * sizeof(uint64)) >> 10;
+    kb = (EvalHashSize * sizeof(uint64_t)) >> 10;
     if (EvalHash)
         FreeMem(EvalHash, &LargeEvalNumber, &LargeEvalHash);
-    size = EvalHashSize * sizeof(uint64);
+    size = EvalHashSize * sizeof(uint64_t);
 	size = MAX((1 << 21), size);
-
-#if defined(LinuxLargePages)
-        size = MAX((1 << 21), size);
-#endif
-
     CreateMem(&EvalHash, 64, size, &LargeEvalNumber, &LargeEvalHash, "EvalHash");
     EvalHashClear();
     return kb;
@@ -172,7 +130,7 @@ void QuitEvalHash()
     }
 void HashClear()
     {
-    uint64 i;
+    uint64_t i;
     memset(HashTable, 0, HashSize * sizeof(typeHash));
     for (i = 0; i < HashSize; i++)
         (HashTable + i)->age = (MaxAge >> 1);
@@ -195,10 +153,7 @@ int InitHash(int mb)
         HashSize = 0x100000000;
     mb = (HashSize * sizeof(typeHash)) >> 20;
     HashMask = HashSize - 4;
-    if (FlagHashInit)
-        FreeMem(HashTable, &Large, &Use);
-    else
-        SetupPrivileges();
+    FreeMem(HashTable, &Large, &Use);
     FlagHashInit = true;
     CreateMem(&HashTable, 128, HashSize * sizeof(typeHash), &Large, &Use, "Hash");
     HashClear();
@@ -209,16 +164,12 @@ int InitHash(int mb)
         PawnHash_MB = (CurrentPHashSize * sizeof(typePawnEval)) >> 20;
     InitPawnHash(PawnHash_MB);
     InitPVHash((PVHashSize * sizeof(typePVHash)) >> 20);
-    InitEvalHash((EvalHashSize * sizeof(uint64)) >> 10);
-
-#ifdef SlabMemory
-    InitSlab(16);
-#else
+    InitEvalHash((EvalHashSize * sizeof(uint64_t)) >> 10);
     InitSlab(0);
-#endif
 
     return mb;
     }
+
 void DetachAllMemory()
     {
     FreeMem(HashTable, &Large, &Use);

@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -37,7 +37,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 static int InitFlags(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ, int bP, int bN, int bB, int bBL,
 	int bBD, int bR, int bQ)
     {
-    uint8 Flags = ((wN || wB || wQ || wR) << 1) | ((bN || bB || bQ || bR) << 0);
+    uint8_t Flags = ((wN || wB || wQ || wR) << 1) | ((bN || bB || bQ || bR) << 0);
     if (!wQ && !wR && wB + wN == 1 && wP <= 4 && bP <= 4)
         Flags &= 1;
     if (!bQ && !bR && bB + bN == 1 && wP <= 4 && bP <= 4)
@@ -251,7 +251,7 @@ static int WhiteWeight(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ,
 				{
 					if (bQ)
 						wWeight = 8;
-					else 
+					else
 						wWeight = 1;
 				}
             }
@@ -295,7 +295,7 @@ static int WhiteWeight(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ,
             {
 				if (bPhase == 4)
 				{
-					if (bQ) 
+					if (bQ)
 					{
 						if (wB == 1)
 							wWeight = 8;
@@ -315,7 +315,7 @@ static int WhiteWeight(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ,
 		}
         else if (wPhase == 6)
 		{
-			if (wQ) 
+			if (wQ)
 			{
 				if (wR)
 				{
@@ -598,7 +598,7 @@ static int BlackWeight(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ,
 				{
 					if (wQ)
 						bWeight = 8;
-					else 
+					else
 						bWeight = 1;
 				}
             }
@@ -790,17 +790,17 @@ static int BlackWeight(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ,
 				if (wPhase == 4 && wQ == 1)
 					bWeight = 7;
 			}
-		}  
+		}
     }
 	if (bQ == 1 && bPhase == 4 && wPhase >= 2 && wP >= 1) // Added on 3/29/2013, recommended by Jose Maria Velasco
 		bWeight = 5;
     return bWeight;
     }
 
-static uint64 ComputeValue(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ, int bP, int bN, int bB, int bBL,
+static uint64_t ComputeValue(int wP, int wN, int wB, int wBL, int wBD, int wR, int wQ, int bP, int bN, int bB, int bBL,
    int bBD, int bR, int bQ)
     {
-    uint64 va = 0;
+    uint64_t va = 0;
     int wMinor = wN + wB;
     int bMinor = bN + bB;
 
@@ -846,7 +846,7 @@ static void CalculateMaterialValue(int c)
     {
     int wQ, bQ, wR, bR, wBL, bBL, wBD, bBD, wN, bN, wP, bP, n, Value, wB, bB;
     int wt, wWeight, bWeight, phase, va1, va2, va3, va4;
-    uint64 va;
+    uint64_t va;
     n = c;
     wQ = n & 1;
     n >>= 1;
@@ -877,12 +877,12 @@ static void CalculateMaterialValue(int c)
     phase = Phase_Minor * (wN + wB + bN + bB) + PhaseRook * (wR + bR) + PhaseQueen * (wQ + bQ);
     va1 = va & 0xffff;
     va2 = ((va >> 16) & 0xffff) + (va1 > 0x8000);
-    va1 = (sint16)va1;
+    va1 = (int16_t)va1;
     va3 = ((va >> 32) & 0xffff) + (va2 > 0x8000);
-    va2 = (sint16)va2;
+    va2 = (int16_t)va2;
     va4 = ((va >> 48) & 0xffff) + (va3 > 0x8000);
-    va3 = (sint16)va3;
-    va4 = (sint16)va4;
+    va3 = (int16_t)va3;
+    va4 = (int16_t)va4;
     if (phase < 8)
         {
         va4 *= 8 - phase;

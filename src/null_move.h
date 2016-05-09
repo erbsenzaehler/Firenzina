@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -29,12 +29,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 *******************************************************************************/
+#pragma once
 
-#if defined(__GNUC__)
-#define INLINE inline
-#endif
-
-static INLINE void MakeNull(typePos* Position)
+static inline void MakeNull(typePos* Position)
     {
     Position->nodes++;
     Position->Dyn->SavedFlags = Position->Dyn->flags;
@@ -43,7 +40,6 @@ static INLINE void MakeNull(typePos* Position)
     Position->Dyn->Hash ^= HashWTM;
     Position->wtm ^= 1;
     Position->height++;
-	UpdateSeldepth(Position);
     Position->Dyn->reversible++;
     if (Position->Dyn->ep)
         {
@@ -57,7 +53,7 @@ static INLINE void MakeNull(typePos* Position)
     Position->Dyn->move = 0;
     Position->Stack[++(Position->StackHeight)] = Position->Dyn->Hash;
     }
-static INLINE void UndoNull(typePos *Position)
+static inline void UndoNull(typePos *Position)
     {
     Position->Dyn--;
     Position->StackHeight--;

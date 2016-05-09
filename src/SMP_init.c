@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -36,15 +36,10 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 void NanoSleep(int x)
     {
-#if defined(_WIN32) || defined(_WIN64)
-    Sleep(x / 1000000);
-
-#else
-    struct timespec TS[1];
-    TS->tv_sec = 0;
-    TS->tv_nsec = x;
+    struct timespec TS;
+    TS.tv_sec = 0;
+    TS.tv_nsec = x;
     nanosleep(TS, NULL);
-#endif
     }
 typedef struct
     {
@@ -65,9 +60,9 @@ void EndSMP()
     SMPAllHalt = true;
     while (true)
         {
-        for (cpu = 0; cpu < NumThreads; cpu++)
+        for (cpu = 0; cpu < Threads; cpu++)
             SignalForLock(PThreadCondWait[cpu], PThreadCondMutex[cpu]);
-        for (cpu = 0; cpu < NumThreads; cpu++)
+        for (cpu = 0; cpu < Threads; cpu++)
             for (rp = 0; rp < RPperCPU; rp++)
                 RootPosition[cpu][rp].stop = true;
         Lock(SMP);
@@ -76,7 +71,7 @@ void EndSMP()
         UnLock(SMP);
         }
     UnLock(SMP);
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         for (rp = 0; rp < RPperCPU; rp++)
             RootPosition[cpu][rp].used = false;
     for (sp = 0; sp < MaxSP; sp++)
@@ -88,7 +83,7 @@ SMPThread(A)
     B = (t_args *)A;
     DoLocked(init_threads++);
         ThreadStall(NullParent, B->cpu);
-    return(VoidStarType)NULL;
+    return (void *) NULL;
     }
 IOThread(A)
     {
@@ -96,11 +91,6 @@ IOThread(A)
         {
         IOAwake = false;
         StallMode = true;
-
-#ifdef RobboBases
-		if (UseRobboBases)
-			OfftoneTripleSMP();
-#endif
 
         while (!SearchIsDone)
             NanoSleep(1000000);
@@ -120,38 +110,25 @@ IOThread(A)
             NanoSleep(1000000);
             if (SMPisActive)
                 CheckDone(RootPosition0, 0);
-#ifdef RobboBases
-		if (UseRobboBases)
-			{
-            if (LoadOnWeakProbe)
-                while (SMPisActive && SubsumeTripleSMP())
-                    CheckDone(RootPosition0, 0);
-			}
-#endif
-
             }
         }
     Destroyed = true;
-    return(VoidStarType)NULL;
+    return (void*) NULL;
     }
 static void SMPCleanup()
     {
     int cpu;
     for (cpu = 0; cpu < CurrCPUs; cpu++)
         {
-#if !defined(_WIN32) && !defined(_WIN64)
-        LockDestroy(&PThreadCondMutex[cpu]);
-#endif
+        pthread_mutex_destroy(&PThreadCondMutex[cpu]);
         if (cpu > 0)
             {
             Die[cpu] = true;
             SignalForLock(PThreadCondWait[cpu], PThreadCondMutex[cpu]);
-            PThreadJoin(PThread[cpu]);
+            pthread_join (PThread[cpu], NULL);
             Die[cpu] = false;
             }
-#if !defined(_WIN32) && !defined(_WIN64)
         LockInit(&PThreadCondMutex[cpu]);
-#endif
         }
     Destroy = true;
     Destroyed = false;
@@ -159,15 +136,12 @@ static void SMPCleanup()
     while (!Destroyed) { }
 		{
 		}
-#if !defined(_WIN32) && !defined(_WIN64)
-    LockDestroy(Wakeup_Lock_IO);
-#endif
+    pthread_mutex_destroy(Wakeup_Lock_IO);
     Destroyed = false;
     }
 int InitSMP()
     {
     int cpu, rp, sp;
-	GetSysInfo();
     Destroy = false;
     if (CurrCPUs)
         SMPCleanup();
@@ -175,38 +149,32 @@ int InitSMP()
     SMPAllHalt = false;
     CondInit(*Wakeup_IO, *Wakeup_Lock_IO);
     SMPFree = 0;
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         for (rp = 0; rp < RPperCPU; rp++)
             {
             RootPosition[cpu][rp].used = false;
             RootPosition[cpu][rp].nodes = 0;
-
-#ifdef RobboBases
-		if (UseRobboBases)
-            RootPosition[cpu][rp].tbhits = 0;
-#endif
-
             }
     for (sp = 0; sp < MaxSP; sp++)
         RootSP[sp].active = false;
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         Working[cpu] = NULL;
-    for (cpu = 0; cpu < NumThreads; cpu++)
+    for (cpu = 0; cpu < Threads; cpu++)
         Die[cpu] = false;
     NullParent->ChildCount = 123;
     io_init = false;
     PThreadCreate(&PThreadIO, NULL, io_thread, NULL);
     init_threads = 1;
-    for (cpu = 1; cpu < NumThreads; cpu++)
+    for (cpu = 1; cpu < Threads; cpu++)
         {
         ARGS[cpu].cpu = cpu;
         PThreadCreate(&PThread[cpu], NULL, SMPThread, &ARGS[cpu]);
         }
-    while (init_threads < NumThreads || !io_init)
+    while (init_threads < Threads || !io_init)
         NanoSleep(1000000);
-    CurrCPUs = NumThreads;
+    CurrCPUs = Threads;
     NanoSleep(1000000);
-    return NumThreads;
+    return Threads;
     }
 static void SPInit()
     {

@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -29,6 +29,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 *****************************************************************************/
+#pragma once
 
 #define WhiteInCheck (Position->Dyn->bAtt & wBitboardK)
 #define BlackInCheck (Position->Dyn->wAtt & bBitboardK)
@@ -60,21 +61,21 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #define MoveNone 0
 typedef struct
     {
-    uint32 move;
+    uint32_t move;
     } typeMoveList;
 typedef struct
     {
-    uint32 move;
-    sint32 value;
-    uint64 nodes;
+    uint32_t move;
+    int32_t value;
+    uint64_t nodes;
     } typeRootMoveList;
 typedef struct
     {
     int phase, mask, bc;
-    uint32 trans_move, move, exclude;
-    uint64 Target;
+    uint32_t trans_move, move, exclude;
+    uint64_t Target;
     typeMoveList List[256];
-    uint32 BadCaps[64];
+    uint32_t BadCaps[64];
     } typeNext;
 
 typedef enum
@@ -101,12 +102,12 @@ typedef enum
 
 typedef struct
     {
-    uint32 move;
-    sint32 Value, alpha, beta;
-    uint32 depth, _0;
-    uint64 nodes;
+    uint32_t move;
+    int32_t Value, alpha, beta;
+    uint32_t depth, _0;
+    uint64_t nodes;
     } typeMPV;
 typeMPV MPV[256];
 int MultiPV;
 bool DoSearchMoves;
-uint32 SearchMoves[256];
+uint32_t SearchMoves[256];

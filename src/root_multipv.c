@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -39,7 +39,7 @@ void ApplySort(int n, typeMPV *mpv)
     {
     typeMPV *p;
     int s, x;
-    uint64 y;
+    uint64_t y;
     for (s = 0; s < n && mpv[s].move; s++)
         {
         if (s == 0)
@@ -81,28 +81,20 @@ int MyMultiPV(typePos * Position, int depth)
     int Cnt, cnt, best_value, move_is_check, new_depth, v;
     typeRootMoveList *p, *q;
     typeDynamic *Pos0 = Position->Dyn;
-    uint32 move;
+    uint32_t move;
     int cpu, rp;
     int extend, LMR, value;
     int to;
     int i, j, x, moveno;
     int Alpha = -ValueMate, Target, Delta, Alpha2, Lower;
     int GoodMoves = 0;
-    uint64 Nodes, NodesStore, nodes, y;
+    uint64_t Nodes, NodesStore, nodes, y;
     if (depth < 14)
         for (i = 0; i < 0x100; i++)
             MPV[i].move = MPV[i].Value = 0;
     if (DoOutput && DepthInfo)
 		{
         Send("info depth %d\n", depth >> 1);
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "info depth %d\n", depth >> 1);
-			close_log();
-			}
-#endif
 		}
 
     Cnt = 0;
@@ -114,7 +106,7 @@ int MyMultiPV(typePos * Position, int depth)
     p = RootMoveList;
     v = best_value = -ValueInfinity;
         Nodes = 0;
-        for (cpu = 0; cpu < NumThreads; cpu++)
+        for (cpu = 0; cpu < Threads; cpu++)
             for (rp = 0; rp < RPperCPU; rp++)
                 Nodes += RootPosition[cpu][rp].nodes;
     NodesStore = Nodes;
@@ -156,14 +148,6 @@ int MyMultiPV(typePos * Position, int depth)
         if (DoOutput && CurrMoveInfo && Analysing && depth >= 24 && !BenchMarking)
 			{
             Send("info currmove %s currmovenumber %d\n", Notate(move, String1[Position->cpu]),(p - RootMoveList) + 1);
-#ifdef Log
-			if (WriteLog)
-				{
-				log_file = fopen(log_filename, "a");
-				fprintf(log_file, "info currmove %s currmovenumber %d\n", Notate(move, String1[Position->cpu]),(p - RootMoveList) + 1);
-				close_log();
-				}
-#endif
 			}
 
         if (GoodMoves < MultiPV || depth <= 2)
@@ -282,7 +266,7 @@ int MyMultiPV(typePos * Position, int depth)
         Undo(Position, move);
         CheckHalt();
             Nodes = 0;
-            for (cpu = 0; cpu < NumThreads; cpu++)
+            for (cpu = 0; cpu < Threads; cpu++)
                 for (rp = 0; rp < RPperCPU; rp++)
                     Nodes += RootPosition[cpu][rp].nodes;
         p->nodes = Nodes - NodesStore;

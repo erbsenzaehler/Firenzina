@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -42,8 +42,8 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 int MyQsearch(typePos *Position, int value, int depth)
     {
     int Value, i, v, best_value;
-    uint32 Temp, move, trans_move = 0, trans_depth, move_depth = 0;
-    uint64 Target;
+    uint32_t Temp, move, trans_move = 0, trans_depth, move_depth = 0;
+    uint64_t Target;
     typeMoveList List[256], *list, *p, *q;
     typeDynamic *Pos0 = Position->Dyn;
     TransDeclare();
@@ -186,10 +186,10 @@ int MyQsearchCheck(typePos *Position, int value, int depth)
     int ignored, Value, i;
     int v, best_value, trans_depth, move_depth = 0;
     TransDeclare();
-    uint64 Target;
+    uint64_t Target;
     typeMoveList List[256], *list, *p, *q;
     typeDynamic *Pos0;
-    uint32 move, Temp, trans_move = 0;
+    uint32_t move, Temp, trans_move = 0;
     Pos0 = Position->Dyn;
 	CheckForMate (value);
     CheckRepetition(true);

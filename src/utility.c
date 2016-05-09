@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -30,29 +30,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 *******************************************************************************/
 
+#include <sys/select.h>
+#include <unistd.h>
+
 #include "fire.h"
 #include "material_value.h"
 
-#if defined(__GNUC__)
-#include <unistd.h>
-#if !defined(_WIN32) && !defined(_WIN64)
-#include <sys/select.h>
-#else
-#include <winsock2.h>
-#endif
-#define FD_Zero FD_ZERO
-#else
-#include <intrin.h>
-#endif
-/*
-#if defined(_WIN32) && !defined(__GNUC__) || defined(_WIN64) && !defined(__GNUC__)
-#include <winsock2.h>
-#endif
-*/
 #define Tweak (0x74d3c012a8bf965e)
+
 int PreviousDepth, PreviousFast;
 
-char *Notate(uint32 move, char *M)
+char *Notate(uint32_t move, char *M)
     {
     int fr, to, pr;
     char c[16] = "0123nbrq";
@@ -74,7 +62,7 @@ char *Notate(uint32 move, char *M)
         }
     return M;
     }
-uint32 FullMove(typePos* Position, uint32 x)
+uint32_t FullMove(typePos* Position, uint32_t x)
 	{
 	int pi, to = To(x), fr = From(x);
 	if (!x)
@@ -89,7 +77,7 @@ uint32 FullMove(typePos* Position, uint32 x)
 		x |= FlagEP;
 	return x;
 	}
-uint32 NumericMove(typePos* Position, char* str)
+uint32_t NumericMove(typePos* Position, char* str)
 	{
 	int x;
 	x = FullMove(Position, (str[2] - 'a') + ((str[3] - '1') << 3) + ((str[0] - 'a') << 6) + ((str[1] - '1') << 9));
@@ -106,7 +94,7 @@ uint32 NumericMove(typePos* Position, char* str)
 void InitBitboards(typePos* Position)
     {
     int i, pi;
-    uint64 O;
+    uint64_t O;
 
     BoardIsOk = false;
     for (i = 0; i < 16; i++)
@@ -198,63 +186,7 @@ void InitBitboards(typePos* Position)
         BoardIsOk = false;
     BoardIsOk = true;
     }
-#if defined(_WIN32) || defined(_WIN64)
-#include <time.h>
-bool TryInput()
-    {
-    static int init = 0, is_pipe;
-    static HANDLE stdin_h;
-    DWORD val;
-    if (SuppressInput)
-        return false;
-    if (!SearchIsDone && StallInput)
-        return false;
-    if (!init)
-        {
-        init = 1;
-        stdin_h = GetStdHandle(STD_INPUT_HANDLE);
-        is_pipe = !GetConsoleMode(stdin_h, &val);
-        if (!is_pipe)
-            {
-            SetConsoleMode(stdin_h, val & ~(ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT));
-            FlushConsoleInputBuffer(stdin_h);
-            }
-        }
-    if (is_pipe)
-        {
-        if (!PeekNamedPipe(stdin_h, NULL, 0, NULL, &val, NULL))
-            return 1;
-        return val > 0;
-        }
-    else
-        {
-        GetNumberOfConsoleInputEvents(stdin_h, &val);
-        return val > 1;
-        }
-    return 0;
-    }
-uint64 GetClock()
-    {
-    return(GetTickCount() * 1000ULL);
-    }
 
-uint64 ProcessClock()
-{
-	FILETIME ftProcCreation, ftProcExit, ftProcKernel, ftProcUser;
-	LARGE_INTEGER user_time, kernel_time;
-	uint64 x;
-	uint64 tt = 10;
-
-	GetProcessTimes(GetCurrentProcess(), &ftProcCreation, &ftProcExit, &ftProcKernel, &ftProcUser);
-
-	user_time.LowPart = ftProcUser.dwLowDateTime;
-	user_time.HighPart = ftProcUser.dwHighDateTime;
-	kernel_time.LowPart = ftProcKernel.dwLowDateTime;
-	kernel_time.HighPart = ftProcKernel.dwHighDateTime;
-	x = (uint64) (user_time.QuadPart + kernel_time.QuadPart) / tt;
-	return x;
-}
-#else
 #include <unistd.h>
 bool TryInput()
     {
@@ -265,7 +197,7 @@ bool TryInput()
         return false;
     if (!SearchIsDone && StallInput)
         return false;
-    FD_Zero(fd);
+    FD_ZERO(fd);
     FD_SET(STDIN_FILENO, fd);
     tv->tv_sec = 0;
     tv->tv_usec = 0;
@@ -273,9 +205,9 @@ bool TryInput()
     return(v > 0);
     }
 #include <sys/time.h>
-uint64 GetClock()
+uint64_t GetClock()
     {
-    uint64 x;
+    uint64_t x;
     struct timeval tv;
     gettimeofday(&tv, NULL);
     x = tv.tv_sec;
@@ -283,11 +215,10 @@ uint64 GetClock()
     x += tv.tv_usec;
     return x;
     }
-uint64 ProcessClock()
+uint64_t ProcessClock()
     {
-    return (uint64)clock();
+    return (uint64_t)clock();
     }
-#endif
 
 #include <stdarg.h>
 void Send(char *fmt, ...)
@@ -358,168 +289,3 @@ void NewGame(typePos* Position, bool full)
     ResetPositionalGain();
     PawnHashReset();
     }
-void ShowBanner()
-    {
-    char *startup_banner = "" Engine " " Vers " " Plat "\n"
- 		"by " Author "\n\n"
- 		"" Orig "\n\n"
-		"compiled by " Compiler "\n"		
-        "" __DATE__ " " __TIME__ "\n\n";
-
-    Send(startup_banner);
-    fflush(stdout);
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, startup_banner);
-			close_log();
-			}
-#endif
-    }
-
-void GetSysInfo()
-    {
-#if defined(_WIN32) || defined(_WIN64)
-SYSTEM_INFO sysinfo;
-    GetSystemInfo(&sysinfo);
-    NumCPUs = sysinfo.dwNumberOfProcessors;
-#elif defined(__ANDROID__)
-#include "cpu-features.h"
-NumCPUs = android_getCpuCount();
-#else
-#include <sys/sysinfo.h>
-NumCPUs = get_nprocs();
-#endif
-
-
-    if(NumCPUs < 1)
-        NumCPUs = 1;
-
-    if(NumCPUs > 1)
-		{
-        Send("\n%d CPUs found\n", NumCPUs);
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "\n%d CPUs found\n", NumCPUs);
-			close_log();
-			}
-#endif
-
-		}
-    else
-		{
-        Send("\n%d CPU found\n", NumCPUs);
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "\n%d CPU found\n", NumCPUs);
-			close_log();
-			}
-#endif
-
-		}
-	    
-	NumThreads = NumCPUs; 
-    if(NumThreads > MaxCPUs)
-        NumThreads = MaxCPUs;
-	if (OptMaxThreads > OptMinThreads) // normal; Added 5/22/2013 by Yuri Censor for Firenzina
-	{
-		if(NumThreads > OptMaxThreads)
-			NumThreads = OptMaxThreads;
-		else if (NumThreads < OptMinThreads) // Added 5/22/2013 by Yuri Censor for Firenzina
-			NumThreads = OptMinThreads;
-	}
-	else if (OptMinThreads > OptMaxThreads) // abnormal; Added 5/22/2013 by Yuri Censor for Firenzina
-	{
-		if(NumThreads > OptMinThreads) // Treat OptMinThreads as OptMaxThreads and vice versa
-			NumThreads = OptMinThreads;
-		else if (NumThreads < OptMaxThreads) 
-			NumThreads = OptMaxThreads;
-	}
-	else // if (OptMinThreads == OptMaxThreads)
-		NumThreads = OptMaxThreads;
-
-    if(NumThreads > 1)
-		{
-        Send("using %d threads\n\n", NumThreads);
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "using %d threads\n\n", NumThreads);
-			close_log();
-			}
-#endif
-
-		}
-    else
-		{
-        Send("using %d thread\n\n", NumThreads);
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "using %d thread\n\n", NumThreads);
-			close_log();
-			}
-#endif
-		}
-    }
-
-void SetPOPCNT()
-	{
-#if !defined(__GNUC__)
-#if defined(_WIN32) || defined(_WIN64)
-int CPUInfo[4] = {-1};
-  	__cpuid(CPUInfo, 0x00000001);
-  	HasPopcnt = (CPUInfo[2] >> 23) & 1;
-  	if(HasPopcnt)
-  		{
-    	POPCNT = &PopcntHard;
-    	Send("Hardware POPCNT supported\n\n");
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "Hardware POPCNT supported\n\n");
-			close_log();
-			}
-#endif
-  		}
-  	else
-		POPCNT = &PopcntEmul;
-
-#endif
-#endif
-	}
-
-#ifdef Log
-int create_log(void)
-    {
-    char buf[256];
-    time_t now;
-    struct tm tnow;
-    time(&now);
-    tnow = *localtime(&now);
-    strftime(buf, 32, "%d%b-%H%M", &tnow);
-    sprintf(log_filename, "%s %s %s %s.txt", Engine, Vers, Plat, buf);
-    log_file = fopen(log_filename, "wt");
-	close_log();
-	return false;
-    }
-
-void close_log(void)
-    {
-    fclose(log_file);
-    }
-#endif

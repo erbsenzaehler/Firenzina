@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -32,7 +32,6 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 #include "fire.h"
 #define MaxAge 256
-#define MaxDepth 256
 
 #define AgeDepthMix(a, x, y) \
   ((((a) - (x)) & (MaxAge - 1)) * MaxDepth + (MaxDepth - ((y) + 1)))
@@ -43,7 +42,7 @@ void IncrementAge()
     if (GlobalAge == MaxAge)
         GlobalAge = 0;
     }
-void HashLowerAllNew(uint64 Z, int move, int depth, int Value, int ht, int age)
+void HashLowerAllNew(uint64_t Z, int move, int depth, int Value, int ht, int age)
     {
     int Depth, i;
     TransDeclare();
@@ -81,7 +80,7 @@ void HashLowerAllNew(uint64 Z, int move, int depth, int Value, int ht, int age)
     trans->flags = FlagLower | FlagAll;
     return;
     }
-void HashUpperCutNew(uint64 Z, int depth, int Value, int ht, int age)
+void HashUpperCutNew(uint64_t Z, int depth, int Value, int ht, int age)
     {
     int Depth, i;
     TransDeclare();
@@ -117,7 +116,7 @@ void HashUpperCutNew(uint64 Z, int depth, int Value, int ht, int age)
     trans->flags = FlagUpper | FlagCut;
     return;
     }
-void HashLowerNew(uint64 Z, int move, int depth, int Value, int Flags, int ht, int age)
+void HashLowerNew(uint64_t Z, int move, int depth, int Value, int Flags, int ht, int age)
     {
     int Depth, i;
     TransDeclare();
@@ -156,7 +155,7 @@ void HashLowerNew(uint64 Z, int move, int depth, int Value, int Flags, int ht, i
     trans->flags = FlagLower | Flags;
     return;
     }
-void HashUpperNew(uint64 Z, int depth, int Value, int Flags, int ht, int age)
+void HashUpperNew(uint64_t Z, int depth, int Value, int Flags, int ht, int age)
     {
     int Depth, i;
     TransDeclare();
@@ -193,7 +192,7 @@ void HashUpperNew(uint64 Z, int depth, int Value, int Flags, int ht, int age)
     trans->flags = FlagUpper | Flags;
     return;
     }
-static void pv_zobrist(uint64 Z, int move, int depth, int Value, int age)
+static void pv_zobrist(uint64_t Z, int move, int depth, int Value, int age)
     {
     int i, k = Z & PVHashMask;
     TransPVDeclare();
@@ -223,7 +222,7 @@ static void pv_zobrist(uint64 Z, int move, int depth, int Value, int age)
     trans_pv->Value = Value;
     trans_pv->age = age;
     }
-void HashExactNew(uint64 Z, int move, int depth, int Value, int Flags, int ht, int age)
+void HashExactNew(uint64_t Z, int move, int depth, int Value, int Flags, int ht, int age)
     {
     int Depth, i, j;
     TransDeclare();

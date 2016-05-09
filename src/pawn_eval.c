@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -134,7 +134,7 @@ void InitPawns()
 static int WhiteKingDanger(typePos *Position, int wKs)
     {
     int e, RankWa, RankWb, RankWc, RankBa, RankBb, RankBc, v, rank = Rank(wKs);
-    uint64 T, A = wBitboardP & NotInFrontB[rank];
+    uint64_t T, A = wBitboardP & NotInFrontB[rank];
     typePawnPtr Z = PawnPtr[File(wKs)];
     T = A & Z.Edge;
     RankWa = BSF(T);
@@ -192,7 +192,7 @@ static int WhiteKingDanger(typePos *Position, int wKs)
 static int BlackKingDanger(typePos *Position, int bKs)
     {
     int e, RankWa, RankWb, RankWc, RankBa, RankBb, RankBc, v, rank = Rank(bKs);
-    uint64 T, A = bBitboardP & NotInFrontW[rank];
+    uint64_t T, A = bBitboardP & NotInFrontW[rank];
     typePawnPtr Z = PawnPtr[File(bKs)];
     T = A & Z.Edge;
     RankBa = BSR(T);
@@ -260,7 +260,7 @@ void PawnEval(typePos *Position, typePawnEval *Result)
     int wKs = Position->wKsq, bKs = Position->bKsq;
     int b, rank, file, v, ValuePassedPawn;
 	int v1, v2;
-    uint64 T, U, V, Connected;
+    uint64_t T, U, V, Connected;
     typePawnEval *ptr;
     Result->wPlight = Result->bPlight = Result->wPdark = Result->bPdark = 0;
     Result->wKdanger = Result->bKdanger = 0;
@@ -386,7 +386,7 @@ void PawnEval(typePos *Position, typePawnEval *Result)
                 ValuePassedPawn += ConnectedPassedPawnValue[rank] + ConnectedPassedPawnValue[Rank(BSF(V))];
             }
         Value += ValuePassedPawn;
-        Result->wPassedFiles |= (uint8)(1 << file);
+        Result->wPassedFiles |= (uint8_t)(1 << file);
         if (b <= H3)
             continue;
         Value += (WhiteKingPawnDistance(b + 8, bKs) * OppKingPawnDistance[Rank(b)]);
@@ -514,7 +514,7 @@ void PawnEval(typePos *Position, typePawnEval *Result)
                 ValuePassedPawn += ConnectedPassedPawnValue[7 - rank] + ConnectedPassedPawnValue[7 - (BSF(V) >> 3)];
             }
         Value -= ValuePassedPawn;
-        Result->bPassedFiles |= (uint8)(1 << file);
+        Result->bPassedFiles |= (uint8_t)(1 << file);
         if (b >= A6)
             continue;
         Value -= (BlackKingPawnDistance(b - 8, wKs) * OppKingPawnDistance[R8 - Rank(b)]);
@@ -547,8 +547,8 @@ void PawnEval(typePos *Position, typePawnEval *Result)
         Value -= KingOO;
     if (Position->Dyn->oo & 8)
         Value -= KingOOO;
-	v1 = (sint16)(Value & 0xffff);
-	v2 = (v1 < 0) + (sint16)((Value >> 16) & 0xffff);
+	v1 = (int16_t)(Value & 0xffff);
+	v2 = (v1 < 0) + (int16_t)((Value >> 16) & 0xffff);
 	v1 = (v1 * PawnWeight) >> 7;
 	v2 = (v2 * PawnWeight) >> 7;
 	Value = Score(v2, v1);
@@ -566,13 +566,13 @@ void PawnEval(typePos *Position, typePawnEval *Result)
         v = MIN(v, 5 + BlackKingDanger(Position, C8));
     Result->bKdanger = Score(v, 0);
     Result->PawnHash = Position->Dyn->PawnHash;
-    Result->PawnHash ^= (((uint64 *)(Result)) + 0x1)[0];
-    Result->PawnHash ^= (((uint64 *)(Result)) + 0x2)[0];
-    Result->PawnHash ^= (((uint64 *)(Result)) + 0x3)[0];
+    Result->PawnHash ^= (((uint64_t *)(Result)) + 0x1)[0];
+    Result->PawnHash ^= (((uint64_t *)(Result)) + 0x2)[0];
+    Result->PawnHash ^= (((uint64_t *)(Result)) + 0x3)[0];
     ptr = PawnHash + (Position->Dyn->PawnHash &(CurrentPHashSize - 1));
     memcpy(ptr, Result, sizeof(typePawnEval));
-    Result->PawnHash ^= (((uint64 *)(Result)) + 0x1)[0];
-    Result->PawnHash ^= (((uint64 *)(Result)) + 0x2)[0];
-    Result->PawnHash ^= (((uint64 *)(Result)) + 0x3)[0];
+    Result->PawnHash ^= (((uint64_t *)(Result)) + 0x1)[0];
+    Result->PawnHash ^= (((uint64_t *)(Result)) + 0x2)[0];
+    Result->PawnHash ^= (((uint64_t *)(Result)) + 0x3)[0];
     return;
     }

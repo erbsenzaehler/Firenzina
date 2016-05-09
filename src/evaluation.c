@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -33,21 +33,21 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #include "fire.h"
 #include "evaluation.h"
 
-uint8 KPwtm[24576] =
+uint8_t KPwtm[24576] =
 	{
 #include "kp_white.h"
 	};
-uint8 KPbtm[24576] =
+uint8_t KPbtm[24576] =
 	{
 #include "kp_black.h"
 	};
 
-static uint32 Random32(int cpu)
+static uint32_t Random32(int cpu)
     {
     Rand[cpu].RandKey = Rand[cpu].RandKey * 0x7913cc52088a6cfULL + 0x99f2e6bb0313ca0dULL;
     return ((Rand[cpu].RandKey >> 18) & 0xffffffff);
     }
-void InitRandom32(uint64 x)
+void InitRandom32(uint64_t x)
     {
     int cpu;
     for (cpu = 0; cpu < MaxCPUs; cpu++)
@@ -83,19 +83,19 @@ static int MaterialValue(typePos *Position)
         Value += BPValue;
     if (bBitboardBL && bBitboardBD)
         Value -= BPValue;
-	
+
     return (Value * MaterialWeight) >> 7;
     }
-static void KingPawnWhite(typePos *Position, int matval, uint8 Token, typePawnEval *PawnInfo)
+static void KingPawnWhite(typePos *Position, int matval, uint8_t Token, typePawnEval *PawnInfo)
     {
     int Value, WhiteLeader, BlackLeader, sq, rank;
-    uint8 C;
-    uint64 A, T, wPatt, bPatt;
+    uint8_t C;
+    uint64_t A, T, wPatt, bPatt;
     if (PawnInfo->PawnHash != Position->Dyn->PawnHash)
         PawnEval(Position, PawnInfo);
     Position->Dyn->wXray = Position->Dyn->bXray = 0;
     Value = ((Position->Dyn->Static)+(PawnInfo->Score));
-    Value = (sint16)(Value & 0xffff);
+    Value = (int16_t)(Value & 0xffff);
     WhiteLeader = 0;
     C = PawnInfo->wPassedFiles;
     while (C)
@@ -185,7 +185,7 @@ static void KingPawnWhite(typePos *Position, int matval, uint8 Token, typePawnEv
             if (!Value)
                Position->Dyn->Value = 0;
             else
-               Position->Dyn->Value = ((sint16)(Position->Dyn->Static & 0xffff)) + 75 * rank + 250;
+               Position->Dyn->Value = ((int16_t)(Position->Dyn->Static & 0xffff)) + 75 * rank + 250;
             }
         }
     else if (Position->Dyn->Value < 0)
@@ -208,23 +208,23 @@ static void KingPawnWhite(typePos *Position, int matval, uint8 Token, typePawnEv
             if (!Value)
                Position->Dyn->Value = 0;
             else
-               Position->Dyn->Value = ((sint16)(Position->Dyn->Static & 0xffff)) - 75 * rank - 250;
+               Position->Dyn->Value = ((int16_t)(Position->Dyn->Static & 0xffff)) - 75 * rank - 250;
             }
 		if (!((wBitboardP << 8) & ~Position->OccupiedBW) && !(wPatt & bBitboardOcc)
 			&& !Position->Dyn->ep && !(AttK[Position->wKsq]& ~Position->Dyn->bAtt) && !Position->Dyn->wKcheck)
 			Position->Dyn->Value = 0;
         }
     }
-static void KingPawnBlack(typePos *Position, int matval, uint8 Token, typePawnEval *PawnInfo)
+static void KingPawnBlack(typePos *Position, int matval, uint8_t Token, typePawnEval *PawnInfo)
     {
     int Value, WhiteLeader, BlackLeader, sq, rank;
-    uint8 C;
-    uint64 A, T, wPatt, bPatt;
+    uint8_t C;
+    uint64_t A, T, wPatt, bPatt;
     if (PawnInfo->PawnHash != Position->Dyn->PawnHash)
         PawnEval(Position, PawnInfo);
     Position->Dyn->wXray = Position->Dyn->bXray = 0;
     Value = ((Position->Dyn->Static)+(PawnInfo->Score));
-    Value = (sint16)(Value & 0xffff);
+    Value = (int16_t)(Value & 0xffff);
     WhiteLeader = 0;
     C = PawnInfo->wPassedFiles;
     while (C)
@@ -314,7 +314,7 @@ static void KingPawnBlack(typePos *Position, int matval, uint8 Token, typePawnEv
             if (!Value)
                Position->Dyn->Value = 0;
             else
-               Position->Dyn->Value = -((sint16)(Position->Dyn->Static & 0xffff)) - 75 * rank - 250;
+               Position->Dyn->Value = -((int16_t)(Position->Dyn->Static & 0xffff)) - 75 * rank - 250;
             }
         }
     else if (Position->Dyn->Value > 0)
@@ -337,7 +337,7 @@ static void KingPawnBlack(typePos *Position, int matval, uint8 Token, typePawnEv
             if (!Value)
                Position->Dyn->Value = 0;
             else
-               Position->Dyn->Value = -((sint16)(Position->Dyn->Static & 0xffff)) + 75 * rank + 250;
+               Position->Dyn->Value = -((int16_t)(Position->Dyn->Static & 0xffff)) + 75 * rank + 250;
             }
 		if (!((bBitboardP >> 8) & ~Position->OccupiedBW) && !(bPatt & wBitboardOcc)
 			&& !Position->Dyn->ep && !(AttK[Position->bKsq]& ~Position->Dyn->wAtt) && !Position->Dyn->bKcheck)
@@ -351,13 +351,13 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
     int index, matval, Value, MobValue = 0;
     int b, rank, antiphase, phase;
     int to, cp, wKs, bKs;
-    uint64 U, wKatt, bKatt, A, AttB, AttR;
-    sint32 wKhit, bKhit;
-    uint64 wGoodMinor, bGoodMinor, wSafeMob, bSafeMob, wOKxray, bOKxray;
-    uint64 T, bPatt, wPatt;
+    uint64_t U, wKatt, bKatt, A, AttB, AttR;
+    int32_t wKhit, bKhit;
+    uint64_t wGoodMinor, bGoodMinor, wSafeMob, bSafeMob, wOKxray, bOKxray;
+    uint64_t T, bPatt, wPatt;
     int open, end;
-    uint8 bGoodAtt, wGoodAtt;
-    uint8 Token;
+    uint8_t bGoodAtt, wGoodAtt;
+    uint8_t Token;
     int v, positional;
     typePawnEval PawnInfo[1];
     int ch;
@@ -396,7 +396,7 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
         }
     if (((Position->Dyn->Hash ^ GetEvalHash(Position->Dyn->Hash)) & 0xffffffffffff0000) == 0)
         {
-        Value = (int)((sint16)(GetEvalHash(Position->Dyn->Hash) & 0xffff));
+        Value = (int)((int16_t)(GetEvalHash(Position->Dyn->Hash) & 0xffff));
         Position->Dyn->lazy = 0;
         Mobility(Position);
         Position->Dyn->PositionalValue = ((Position->wtm) ? Value : -Value) - matval;
@@ -408,39 +408,10 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
         return;
         }
 
-#ifdef RobboBases
-    if(UseRobboBases && TripleBasesLoaded && SearchRobboBases
-		&& depth >= TripleWeakProbeDepth && TripleCondition (Position))
-        {
-		int va;
-		Mobility(Position);
-		if (TripleValue (Position, &va, depth < TripleDefiniteProbeDepth &&
-			Height (Position) > TripleDefiniteProbeHeight, false))
-			{
-			int c = POPCNT(Position->OccupiedBW);
-			int molt = 21000 - (c << 7) - (Height(Position) << 6);
-
-			if(va == 0)
-				Position->Dyn->Value = 0;
-			else
-				{
-				Position->Dyn->Value = (va > 0) ? molt : -molt;
-				Position->Dyn->Value += (Position->wtm ? matval : -matval);
-				}
-			Position->Dyn->lazy = 1;
-			Position->Dyn->PositionalValue = 0;
-			GetEvalHash(Position->Dyn->Hash) =
-				(Position->Dyn->Hash & 0xffffffffffff0000) | (Position->Dyn->Value & 0xffff);
-			Position->Dyn->exact = true;
-			return;
-			}
-		}
-#endif
-
     memcpy(PawnInfo, PawnPointer, sizeof(typePawnEval));
-    PawnInfo->PawnHash ^= (((uint64 *)(PawnInfo)) + 0x1)[0];
-    PawnInfo->PawnHash ^= (((uint64 *)(PawnInfo)) + 0x2)[0];
-    PawnInfo->PawnHash ^= (((uint64 *)(PawnInfo)) + 0x3)[0];
+    PawnInfo->PawnHash ^= (((uint64_t *)(PawnInfo)) + 0x1)[0];
+    PawnInfo->PawnHash ^= (((uint64_t *)(PawnInfo)) + 0x2)[0];
+    PawnInfo->PawnHash ^= (((uint64_t *)(PawnInfo)) + 0x3)[0];
     if ((Position->Dyn->material & 0xff) == 0)
         {
         Position->wtm
@@ -470,8 +441,8 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
             if (cp)
                 Value -= PST(cp, to);
             phase = MIN(Position->Dyn->material & 0xff, 32);
-            end = (sint16)(Value & 0xffff);
-            open = (end < 0) + (sint16)((Value >> 16) & 0xffff);
+            end = (int16_t)(Value & 0xffff);
+            open = (end < 0) + (int16_t)((Value >> 16) & 0xffff);
             antiphase = 32 - phase;
             Value = (end * antiphase + open * phase) >> 5;
             positional += Value;
@@ -494,8 +465,8 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
             if (cp)
                 Value -= PST(cp, to);
             phase = MIN(Position->Dyn->material & 0xff, 32);
-            end = (sint16)(Value & 0xffff);
-            open = (end < 0) + (sint16)((Value >> 16) & 0xffff);
+            end = (int16_t)(Value & 0xffff);
+            open = (end < 0) + (int16_t)((Value >> 16) & 0xffff);
             antiphase = 32 - phase;
             Value = (end * antiphase + open * phase) >> 5;
             positional += Value;
@@ -518,8 +489,8 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
     if (PawnInfo->PawnHash != Position->Dyn->PawnHash)
         PawnEval(Position, PawnInfo);
     Value = (PawnInfo->Score);
-    end = (sint16)(Position->Dyn->Static & 0xffff);
-    open = (end < 0) + (sint16)((Position->Dyn->Static >> 16) & 0xffff);
+    end = (int16_t)(Position->Dyn->Static & 0xffff);
+    open = (end < 0) + (int16_t)((Position->Dyn->Static >> 16) & 0xffff);
     open = (open * PSTWeight) >> 7;
     end = (end * PSTWeight) >> 7;
     Value += Score(open, end);
@@ -653,7 +624,7 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
                 {
                 T = bGoodMinor & OpenFileW[b];
                 if (!T)
-                    Value += RookOpenFile;	
+                    Value += RookOpenFile;
                 else
                     {
                     int t = BSF(T);
@@ -1087,8 +1058,8 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
                 }
             }
         }
-    end = (sint16)(MobValue & 0xffff);
-    open = (end < 0) + (sint16)((MobValue >> 16) & 0xffff);
+    end = (int16_t)(MobValue & 0xffff);
+    open = (end < 0) + (int16_t)((MobValue >> 16) & 0xffff);
     open = (open * MobilityWeight) >> 7;
     end = (end * MobilityWeight) >> 7;
     MobValue = Score(open, end);
@@ -1129,7 +1100,7 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
         ch >>= 3;
         ch <<= 16;
         }
-    Position->Dyn->wKdanger = (uint8)(((uint32)(ch * phase)) >> 23);
+    Position->Dyn->wKdanger = (uint8_t)(((uint32_t)(ch * phase)) >> 23);
     Value -= ch;
     if ((~Position->Dyn->wAtt) &bKatt & wBitboardP)
         {
@@ -1161,7 +1132,7 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
         ch >>= 3;
         ch <<= 16;
         }
-    Position->Dyn->bKdanger = (uint8)(((uint32)(ch * phase)) >> 23);
+    Position->Dyn->bKdanger = (uint8_t)(((uint32_t)(ch * phase)) >> 23);
     Value += ch;
     if (wGoodAtt >= 2)
         Value += MultipleAtt;
@@ -1250,8 +1221,8 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
             Value -= RankQueenEnd[7 - rank];
             }
         }
-    end = (sint16)(Value & 0xffff);
-    open = (end < 0) + (sint16)((Value >> 16) & 0xffff);
+    end = (int16_t)(Value & 0xffff);
+    open = (end < 0) + (int16_t)((Value >> 16) & 0xffff);
     antiphase = 32 - phase;
     Value = end * antiphase + open * phase;
     Value = (((Value >> 5) * PositionalWeight) >> 7) + matval;
@@ -1262,7 +1233,7 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
         Value += (((PawnInfo->bDrawWeight * MIN(-Value, 100)) >> 6) * DrawWeight)>>7;
 
     Value = EvalEnding(Position, Value, wPatt, bPatt);
-	
+
 	if (Value > 0 && PawnInfo->wPfile_count <= 1)
 		Value -= Value >> 2;
 	if (Value > 0 && !wBitboardP && Value > matval)
@@ -1273,10 +1244,10 @@ void Eval(typePos *Position, int min, int max, int move, int depth)
 		Value -= (Value - matval) >> 1;
 	if (Value == 0)
 		Value = 1;
-			
+
     if (RandomCount)
         {
-        uint32 r;
+        uint32_t r;
         int n, adj = 0;
         int mask = (1 << RandomBits) - 1;
         r = Random32(Position->cpu);

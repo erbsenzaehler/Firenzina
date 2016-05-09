@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -34,11 +34,6 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 #include "make_unmake.h"
 #include "material_value.h"
 
-#if defined(__GNUC__)
-#define INLINE inline
-#endif
-
-
 #define RevCastle(Pos) (Pos)->Dyn->reversible = 0
 
 typedef enum
@@ -58,7 +53,7 @@ typedef enum
     KQ = ooK | ooQ,
     KQq = ooK | ooQ | ooq
     } KQkqTable;
-static uint64 CastleTable[64] =
+static uint64_t CastleTable[64] =
     {
     Kkq, KQkq, KQkq, KQkq, kq, KQkq, KQkq, Qkq,
     KQkq, KQkq, KQkq, KQkq, KQkq, KQkq, KQkq, KQkq,
@@ -70,69 +65,29 @@ static uint64 CastleTable[64] =
     KQk, KQkq, KQkq, KQkq, KQ, KQkq, KQkq, KQq
     };
 
-#ifdef FischerRandom
-void ReFuel960Castle()
-    {
-    int sq;
-
-    for ( sq = A1; sq <= H8; sq++ )
-        CastleTable[sq] = KQkq;
-
-    if (!Chess960)
-        {
-        CastleTable[A1] = Kkq;
-        CastleTable[E1] = kq;
-        CastleTable[H1] = Qkq;
-        CastleTable[A8] = KQk;
-        CastleTable[E8] = KQ;
-        CastleTable[H8] = KQq;
-        }
-    else
-        {
-        if (Chess960KingFile != 0xff)
-            {
-            CastleTable[Chess960KingFile] = kq;
-            CastleTable[Chess960KingFile + 070] = KQ;
-            }
-
-        if (Chess960QueenRookFile != 0xff)
-            {
-            CastleTable[Chess960QueenRookFile] = Kkq;
-            CastleTable[Chess960QueenRookFile + 070] = KQk;
-            }
-
-        if (Chess960KingRookFile != 0xff)
-            {
-            CastleTable[Chess960KingRookFile] = Qkq;
-            CastleTable[Chess960KingRookFile + 070] = KQq;
-            }
-        }
-    }
-#endif
-
-const static uint64 WhiteEP[8] =
+const static uint64_t WhiteEP[8] =
     {
     Bitboard2 (B4, B4), Bitboard2 (A4, C4),
     Bitboard2 (B4, D4), Bitboard2 (C4, E4),
     Bitboard2 (D4, F4), Bitboard2 (E4, G4),
     Bitboard2 (F4, H4), Bitboard2 (G4, G4)
     };
-const static uint64 BlackEP[8] =
+const static uint64_t BlackEP[8] =
     {
     Bitboard2 (B5, B5), Bitboard2 (A5, C5),
     Bitboard2 (B5, D5), Bitboard2 (C5, E5),
     Bitboard2 (D5, F5), Bitboard2 (E5, G5),
     Bitboard2 (F5, H5), Bitboard2 (G5, G5)
     };
-const static uint8 PromW[8] =
+const static uint8_t PromW[8] =
     {
     0, 0, 0, 0, wEnumN, wEnumBL, wEnumR, wEnumQ
     };
-const static uint8 PromB[8] =
+const static uint8_t PromB[8] =
     {
     0, 0, 0, 0, bEnumN, bEnumBL, bEnumR, bEnumQ
     };
-static INLINE void MakeWhiteOO(typePos *Position, int to)
+static inline void MakeWhiteOO(typePos *Position, int to)
     {
     if (to == G1)
         {
@@ -155,7 +110,7 @@ static INLINE void MakeWhiteOO(typePos *Position, int to)
         Position->sq[D1] = wEnumR;
         }
     }
-static INLINE void MakeBlackOO(typePos *Position, int to)
+static inline void MakeBlackOO(typePos *Position, int to)
     {
     if (to == G8)
         {
@@ -178,138 +133,14 @@ static INLINE void MakeBlackOO(typePos *Position, int to)
         Position->sq[D8] = bEnumR;
         }
     }
-static INLINE void Castle960White( typePos *Position, int move, int to, int fr )
-    {
-    int fl;
-   Position->Dyn++;
-   Position->Dyn->reversible++;
-    RevCastle(Position);
-   Position->Dyn->move = move;
-    fl = Position->Dyn->oo & 0xc;
-   Position->Dyn->Hash ^= HashCastling[Position->Dyn->oo ^ fl];
-   Position->Dyn->Hash ^= HashWTM;
-   Position->Dyn->PawnHash ^= HashCastling[Position->Dyn->oo ^ fl];
-   Position->Dyn->oo = fl;
-
-    if (Position->Dyn->ep)
-        {
-       Position->Dyn->Hash ^= HashEP[Position->Dyn->ep & 7];
-       Position->Dyn->ep = 0;
-        }
-   Position->sq[to] = 0;
-   Position->sq[fr] = 0;
-    wBitboardK ^= SqSet[fr];
-    wBitboardR ^= SqSet[to];
-    wBitboardOcc ^= SqSet[to] | SqSet[fr];
-   Position->wtm ^= 1;
-   Position->height++;
-   Position->Dyn->Hash ^= Hash(wEnumK, fr) ^ Hash(wEnumR, to);
-   Position->Dyn->PawnHash ^= Hash(wEnumK, fr);
-   Position->Dyn->Static -= PST(wEnumK, fr) + PST(wEnumR, to);
-
-    if (to > fr)
-        {
-       Position->sq[F1] = wEnumR;
-       Position->sq[G1] = wEnumK;
-        wBitboardOcc |= SqSet[F1] | SqSet[G1];
-        wBitboardK |= SqSet[G1];
-        wBitboardR |= SqSet[F1];
-       Position->Dyn->Hash ^= Hash(wEnumK, G1) ^ Hash(wEnumR, F1);
-       Position->Dyn->PawnHash ^= Hash(wEnumK, G1);
-       Position->wKsq = G1;
-       Position->Dyn->Static += PST(wEnumK, G1) + PST(wEnumR, F1);
-        }
-
-    if (to < fr)
-        {
-       Position->sq[D1] = wEnumR;
-       Position->sq[C1] = wEnumK;
-        wBitboardOcc |= SqSet[D1] | SqSet[C1];
-        wBitboardK |= SqSet[C1];
-        wBitboardR |= SqSet[D1];
-       Position->Dyn->Hash ^= Hash(wEnumK, C1) ^ Hash(wEnumR, D1);
-       Position->Dyn->PawnHash ^= Hash(wEnumK, C1);
-       Position->wKsq = C1;
-       Position->Dyn->Static += PST(wEnumK, C1) + PST(wEnumR, D1);
-        }
-   Position->OccupiedBW = wBitboardOcc | bBitboardOcc;
-   Position->Stack[++ (Position->StackHeight)] = Position->Dyn->Hash;
-    }
-
-static INLINE void Castle960Black( typePos *Position, int move, int to, int fr )
-    {
-    int fl;
-   Position->Dyn++;
-   Position->Dyn->reversible++;
-    RevCastle(Position);
-   Position->Dyn->move = move;
-    fl = Position->Dyn->oo & 0x3;
-   Position->Dyn->Hash ^= HashCastling[Position->Dyn->oo ^ fl];
-   Position->Dyn->Hash ^= HashWTM;
-   Position->Dyn->PawnHash ^= HashCastling[Position->Dyn->oo ^ fl];
-   Position->Dyn->oo = fl;
-
-    if (Position->Dyn->ep)
-        {
-       Position->Dyn->Hash ^= HashEP[Position->Dyn->ep & 7];
-       Position->Dyn->ep = 0;
-        }
-   Position->sq[to] = 0;
-   Position->sq[fr] = 0;
-    bBitboardK ^= SqSet[fr];
-    bBitboardR ^= SqSet[to];
-    bBitboardOcc ^= SqSet[to] | SqSet[fr];
-   Position->wtm ^= 1;
-   Position->height++;
-   Position->Dyn->Hash ^= Hash(bEnumK, fr) ^ Hash(bEnumR, to);
-   Position->Dyn->PawnHash ^= Hash(bEnumK, fr);
-   Position->Dyn->Static -= PST(bEnumK, fr) + PST(bEnumR, to);
-
-    if (to > fr)
-        {
-       Position->sq[F8] = bEnumR;
-       Position->sq[G8] = bEnumK;
-        bBitboardOcc |= SqSet[F8] | SqSet[G8];
-        bBitboardK |= SqSet[G8];
-        bBitboardR |= SqSet[F8];
-       Position->Dyn->Hash ^= Hash(bEnumK, G8) ^ Hash(bEnumR, F8);
-       Position->Dyn->PawnHash ^= Hash(bEnumK, G8);
-       Position->bKsq = G8;
-       Position->Dyn->Static += PST(bEnumK, G8) + PST(bEnumR, F8);
-        }
-
-    if (to < fr)
-        {
-       Position->sq[D8] = bEnumR;
-       Position->sq[C8] = bEnumK;
-        bBitboardOcc |= SqSet[D8] | SqSet[C8];
-        bBitboardK |= SqSet[C8];
-        bBitboardR |= SqSet[D8];
-       Position->Dyn->Hash ^= Hash(bEnumK, C8) ^ Hash(bEnumR, D8);
-       Position->Dyn->PawnHash ^= Hash(bEnumK, C8);
-       Position->bKsq = C8;
-       Position->Dyn->Static += PST(bEnumK, C8) + PST(bEnumR, D8);
-        }
-   Position->OccupiedBW = wBitboardOcc | bBitboardOcc; 
-   Position->Stack[++ (Position->StackHeight)] = Position->Dyn->Hash;
-    }
-void MakeWhite( typePos* Position, uint32 move )
+void MakeWhite( typePos* Position, uint32_t move )
     {
     int fr, to, pi, fl, cp, z;
-    uint64 mask;
+    uint64_t mask;
    Position->nodes++;
     memcpy(Position->Dyn + 1, Position->Dyn, 32);
     fr = From(move);
     to = To(move);
-
-#ifdef FischerRandom
-    if (Chess960 && MoveIsOO(move))
-        {
-        Castle960White(Position, move, to, fr);
-        return;
-        }
-#endif
-
     pi = Position->sq[fr];
     Position->Dyn++;
     Position->Dyn->reversible++;
@@ -337,7 +168,6 @@ void MakeWhite( typePos* Position, uint32 move )
         Position->Dyn->PawnHash ^= mask;
     Position->wtm ^= 1;
     Position->height++;
-	UpdateSeldepth(Position);
     Position->Dyn->Hash ^= HashWTM;
     if (pi == wEnumK)
         {
@@ -411,30 +241,20 @@ void MakeWhite( typePos* Position, uint32 move )
             }
         }
     Position->Stack[++(Position->StackHeight)] = Position->Dyn->Hash;
-#ifdef HasPreFetch
+
 	if(Position->Dyn->PawnHash != (Position->Dyn - 1)->PawnHash) // Code by Quoc Vuong
-		prefetch(PawnHash + (Position->Dyn->PawnHash & ((uint64)(CurrentPHashSize - 1))));
+		prefetch(PawnHash + (Position->Dyn->PawnHash & ((uint64_t)(CurrentPHashSize - 1))));
 	prefetch(HashTable + (Position->Dyn->Hash & HashMask));
-#endif
 
     }
-void MakeBlack(typePos *Position, uint32 move)
+void MakeBlack(typePos *Position, uint32_t move)
     {
     int fr, to, pi, fl, cp, z;
-    uint64 mask;
+    uint64_t mask;
     Position->nodes++;
     memcpy(Position->Dyn + 1, Position->Dyn, 32);
     fr = From(move);
     to = To(move);
-
-#ifdef FischerRandom
-    if (Chess960 && MoveIsOO(move))
-        {
-        Castle960Black(Position, move, to, fr);
-        return;
-        }
-#endif
-
     pi = Position->sq[fr];
     Position->Dyn++;
     Position->Dyn->reversible++;
@@ -462,7 +282,6 @@ void MakeBlack(typePos *Position, uint32 move)
 		Position->Dyn->PawnHash ^= mask;
 	Position->wtm ^= 1;
 	Position->height++;
-	UpdateSeldepth(Position);
 	Position->Dyn->Hash ^= HashWTM;
 	if (pi == bEnumK)
 		{
@@ -536,14 +355,13 @@ void MakeBlack(typePos *Position, uint32 move)
             }
         }
     Position->Stack[++(Position->StackHeight)] = Position->Dyn->Hash;
-#ifdef HasPreFetch
+
 	if(Position->Dyn->PawnHash != (Position->Dyn - 1)->PawnHash) // Code by Quoc Vuong
-		prefetch(PawnHash + (Position->Dyn->PawnHash & ((uint64)(CurrentPHashSize - 1))));
+		prefetch(PawnHash + (Position->Dyn->PawnHash & ((uint64_t)(CurrentPHashSize - 1))));
 	prefetch(HashTable + (Position->Dyn->Hash & HashMask));
-#endif
 
     }
-void Make(typePos *Position, uint32 move)
+void Make(typePos *Position, uint32_t move)
     {
     if (Position->wtm)
         {

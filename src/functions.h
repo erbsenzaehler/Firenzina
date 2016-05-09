@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -29,6 +29,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 *******************************************************************************/
+#pragma once
+
 #include "fire.h" // Added by YC on 1/9/2014
 void NanoSleep(int);
 int InitPawnHash(int);
@@ -36,69 +38,63 @@ int InitPawnHashWrapper(int);
 void InitArrays();
 void InitCaptureValues();
 void InitSlab(int);
-void CreateMem(void **, int, uint64, int *, bool *, char *);
+void CreateMem(void **, int, uint64_t, int *, bool *, char *);
 void FreeMem(void *, int *, bool *);
-uint64 GetRand();
+uint64_t GetRand();
 void HaltSearch(int, int);
 void CheckDone(typePos*, int);
 void InitSearch(typePos*, char*);
-void Info(sint64);
+void Info(int64_t);
 void Eval(typePos*, int, int, int, int);
 void Mobility(typePos*);
 void EvalHashClear();
 int InitEvalHash(int);
-int EvalEnding(typePos * Position, int Value, uint64 wPatt, uint64 bPatt);
+int EvalEnding(typePos * Position, int Value, uint64_t wPatt, uint64_t bPatt);
 void SetValueArray();
-void InitRandom32(uint64);
-void SetPOPCNT();
+void InitRandom32(uint64_t);
 
-#ifdef RobboBases
-void TripleHashClear();
-int InitTripleHash(int);
-#endif
-
-typeMoveList* CaptureMoves(typePos*, typeMoveList*, uint64);
+typeMoveList* CaptureMoves(typePos*, typeMoveList*, uint64_t);
 typeMoveList* OrdinaryMoves(typePos*, typeMoveList*);
-typeMoveList* EvasionMoves(typePos*, typeMoveList*, uint64);
+typeMoveList* EvasionMoves(typePos*, typeMoveList*, uint64_t);
 void InitCaptureValues();
-typeMoveList* WhiteCaptures(typePos*, typeMoveList*, uint64);
-typeMoveList* BlackCaptures(typePos*, typeMoveList*, uint64);
+typeMoveList* WhiteCaptures(typePos*, typeMoveList*, uint64_t);
+typeMoveList* BlackCaptures(typePos*, typeMoveList*, uint64_t);
 typeMoveList* WhiteOrdinary(typePos*, typeMoveList*);
 typeMoveList* BlackOrdinary(typePos*, typeMoveList*);
-void SortOrdinary(typeMoveList*, typeMoveList*, uint32, uint32, uint32);
-typeMoveList* QuietChecksWhite(typePos*, typeMoveList*, uint64);
-typeMoveList* QuietChecksBlack(typePos*, typeMoveList*, uint64);
+void SortOrdinary(typeMoveList*, typeMoveList*, uint32_t, uint32_t, uint32_t);
+typeMoveList* QuietChecksWhite(typePos*, typeMoveList*, uint64_t);
+typeMoveList* QuietChecksBlack(typePos*, typeMoveList*, uint64_t);
 typeMoveList* PositionalMovesWhite(typePos*, typeMoveList*, int);
 typeMoveList* PositionalMovesBlack(typePos*, typeMoveList*, int);
-typeMoveList* BlackEvasions(typePos*, typeMoveList*, uint64);
-typeMoveList* WhiteEvasions(typePos*, typeMoveList*, uint64);
+typeMoveList* BlackEvasions(typePos*, typeMoveList*, uint64_t);
+typeMoveList* WhiteEvasions(typePos*, typeMoveList*, uint64_t);
 void IncrementAge();
 void HashClear();
 int HashClearAll();
 int InitHash(int);
-void HashLowerAllNew(uint64, int, int, int, int, int);
-void HashUpperCutNew(uint64, int, int, int, int);
-void HashLowerNew(uint64, int, int, int, int, int, int);
-void HashUpperNew(uint64, int, int, int, int, int);
-void HashExactNew(uint64, int, int, int, int, int, int);
+void HashLowerAllNew(uint64_t, int, int, int, int, int);
+void HashUpperCutNew(uint64_t, int, int, int, int);
+void HashLowerNew(uint64_t, int, int, int, int, int, int);
+void HashUpperNew(uint64_t, int, int, int, int, int);
+void HashExactNew(uint64_t, int, int, int, int, int, int);
 int InitPVHash(int);
 int PVHashClear();
 void Input(typePos*);
 void ResetHistory();
 void ResetPositionalGain();
 
-void Make(typePos*, uint32);
-void Undo(typePos*, uint32);
-void MakeWhite(typePos*, uint32);
-void UndoWhite(typePos*, uint32);
-void MakeBlack(typePos*, uint32);
-void UndoBlack(typePos*, uint32);
+void Make(typePos*, uint32_t);
+void Undo(typePos*, uint32_t);
+void MakeWhite(typePos*, uint32_t);
+void UndoWhite(typePos*, uint32_t);
+void MakeBlack(typePos*, uint32_t);
+void UndoBlack(typePos*, uint32_t);
 
 int InitMaterialValue();
-uint32 NextWhite(typePos*, typeNext*);
-uint32 NextBlack(typePos*, typeNext*);
-bool WhiteOK(typePos*, uint32);
-bool BlackOK(typePos*, uint32);
+uint32_t NextWhite(typePos*, typeNext*);
+uint32_t NextBlack(typePos*, typeNext*);
+bool WhiteOK(typePos*, uint32_t);
+bool BlackOK(typePos*, uint32_t);
 void InitPawns();
 void PawnEval(typePos*, typePawnEval*);
 int Move50(typePos*);
@@ -113,10 +109,10 @@ int RootWhite(typePos*, int, int, int);
 int RootBlack(typePos*, int, int, int);
 int PVNodeWhite(typePos*, int, int, int, int);
 int PVNodeBlack(typePos*, int, int, int, int);
-int ExcludeWhite(typePos*, int, int, uint32);
-int ExcludeWhiteCheck(typePos*, int, int, uint32);
-int ExcludeBlack(typePos*, int, int, uint32);
-int ExcludeBlackCheck(typePos*, int, int, uint32);
+int ExcludeWhite(typePos*, int, int, uint32_t);
+int ExcludeWhiteCheck(typePos*, int, int, uint32_t);
+int ExcludeBlack(typePos*, int, int, uint32_t);
+int ExcludeBlackCheck(typePos*, int, int, uint32_t);
 int CutNodeWhite(typePos*, int, int);
 int CutNodeBlack(typePos*, int, int);
 int CutNodeWhiteCheck(typePos*, int, int);
@@ -135,54 +131,27 @@ int QsearchWhiteCheck(typePos*, int, int);
 int QsearchBlackCheck(typePos*, int, int);
 static void OutputBestMove();
 void Search(typePos *);
-void Information(typePos *, sint64, int, int, int);
+void Information(typePos *, int64_t, int, int, int);
 int WhiteAnalysis(typePos*, int, int, int);
 int BlackAnalysis(typePos*, int, int, int);
-bool WhiteSEE(typePos *, uint32);
-bool BlackSEE(typePos *, uint32);
+bool WhiteSEE(typePos *, uint32_t);
+bool BlackSEE(typePos *, uint32_t);
 void InitPosition(typePos *, char *);
 void InitStatic();
-uint32 FullMove(typePos *, uint32);
-uint32 NumericMove(typePos * , char *);
+uint32_t FullMove(typePos *, uint32_t);
+uint32_t NumericMove(typePos * , char *);
 void ErrorEnd(char *, ...);
 void ErrorFen(char *, ...);
 void Send(char *, ...);
-char *Notate(uint32, char *);
-uint64 GetClock();
-uint64 ProcessClock();
+char *Notate(uint32_t, char *);
+uint64_t GetClock();
+uint64_t ProcessClock();
 void InitBitboards(typePos *);
 void NewGame(typePos *, bool);
 bool TryInput();
-
-#ifdef RobboBases
-bool RobboMake(typePos *);
-void InitTotalBaseUtility(bool);
-void TotalInit();
-int SetTotalBaseCache(int);
-int SetTripleBaseCache(int);
-void InitTotalBaseCache(uint64);
-void InitTripleBaseCache(uint64);
-bool TripleValue(typePos *, int *, bool, bool);
-void InitTotalBase();
-void TripleStatistics();
-void CleanupTriple();
-int LoadRobboTripleBases();
-int RegisterRobboTotalBases();
-int UnLoadRobboTripleBases();
-int DeRegisterRobboTotalBases();
-int RobboBulkDirectory();
-int RobboBulkLoad();
-int RobboBulkDirectoryDetach();
-int RobboBulkDetach();
-void OfftoneTripleSMP();
-void QuitTripleHash();
-void MainLine(typePos *Position);
-bool SubsumeTripleSMP();
-#endif
-
 bool SMPSplit(typePos*, typeNext *, int, int, int, int, int *);
-void FailHigh(SplitPoint*, typePos *, uint32);
-//void FailHigh(SplitPoint* sp, typePos* Position, uint32 m);
+void FailHigh(SplitPoint*, typePos *, uint32_t);
+//void FailHigh(SplitPoint* sp, typePos* Position, uint32_t m);
 
 void SMPStub();
 void ThreadHalt(typePos*);
@@ -198,8 +167,6 @@ void EndSMP();
 void RPInit();
 int PawnHashReset();
 void PonderHit();
-void ShowBanner();
-void GetSysInfo();
 void WhiteTopAnalysis(typePos*);
 void BlackTopAnalysis(typePos*);
 int WhiteMultiPV(typePos *, int);
@@ -210,31 +177,7 @@ void QuitLargePawns();
 void QuitPV();
 void DetachAllMemory();
 void QuitEvalHash();
-void SetupPrivileges();
 void MagicMultInit();
 static void FillSlab();
-
-#ifdef Bench
 void BenchMark(typePos*, char*);
 void SDBenchMark(typePos*, char *);
-#endif
-
-#ifdef FischerRandom
-void ReFuel960Castle();
-#endif
-
-#ifdef InitCFG
-void read_cfg_file(char *file_name);
-void gen_def_cfg_file(char *file_name);
-void gen_cur_cfg_file(void);
-static int get_rand_num(int min, int max);
-#endif
-
-#ifdef Log
-int create_log();
-void close_log();
-#endif
-
-#ifdef SlabMemory
-void DeleteSlab();
-#endif

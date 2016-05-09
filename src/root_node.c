@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -47,10 +47,10 @@ int MyRootNode(typePos* Position, int Alpha, int Beta, int depth)
     int Cnt, origAlpha, best_value, cnt, move_is_check, new_depth, v;
     typeRootMoveList *p, *q;
     typeDynamic *Pos0 = Position->Dyn;
-    uint32 move;
+    uint32_t move;
     int extend, LMR;
     int to, value;
-    uint64 Nodes, NodesStore, nodes;
+    uint64_t Nodes, NodesStore, nodes;
     if (Beta > ValueMate)
         Beta = ValueMate;
     if (Alpha < -ValueMate)
@@ -58,16 +58,6 @@ int MyRootNode(typePos* Position, int Alpha, int Beta, int depth)
     if (DoOutput && DepthInfo && !BenchMarking)
 		{
         Send("info depth %d\n", depth >> 1);
-
-#ifdef Log
-		if (WriteLog)
-			{
-			log_file = fopen(log_filename, "a");
-			fprintf(log_file, "info depth %d\n", depth >> 1);
-			close_log();
-			}
-#endif
-
 		}
 
     Cnt = 0;
@@ -81,7 +71,7 @@ int MyRootNode(typePos* Position, int Alpha, int Beta, int depth)
     v = best_value = -ValueInfinity;
     cnt = 0;
         Nodes = 0;
-        for (cpu = 0; cpu < NumThreads; cpu++)
+        for (cpu = 0; cpu < Threads; cpu++)
             for (rp = 0; rp < RPperCPU; rp++)
                 Nodes += RootPosition[cpu][rp].nodes;
     NodesStore = Nodes;
@@ -104,16 +94,6 @@ int MyRootNode(typePos* Position, int Alpha, int Beta, int depth)
         if (DoOutput && CurrMoveInfo && depth >= 22 && !BenchMarking)
 			{
             Send("info currmove %s currmovenumber %d\n", Notate(move, String1[Position->cpu]),(p - RootMoveList) + 1);
-
-#ifdef Log
-			if (WriteLog)
-				{
-				log_file = fopen(log_filename, "a");
-				fprintf(log_file, "info currmove %s currmovenumber %d\n", Notate(move, String1[Position->cpu]),(p - RootMoveList) + 1);
-				close_log();
-				}
-#endif
-
 			}
 
 		if (Is_Exact (Position->Dyn->exact))
@@ -157,7 +137,7 @@ int MyRootNode(typePos* Position, int Alpha, int Beta, int depth)
         else
             p->value = v;
             Nodes = 0;
-            for (cpu = 0; cpu < NumThreads; cpu++)
+            for (cpu = 0; cpu < Threads; cpu++)
                 for (rp = 0; rp < RPperCPU; rp++)
                     Nodes += RootPosition[cpu][rp].nodes;
         p->nodes = Nodes - NodesStore;

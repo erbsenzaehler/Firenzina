@@ -3,12 +3,12 @@ Firenzina is a UCI chess playing engine by
 Kranium (Norman Schmidt), Yuri Censor (Dmitri Gusev) and ZirconiumX (Matthew Brades).
 Rededication: To the memories of Giovanna Tornabuoni and Domenico Ghirlandaio.
 Special thanks to: Norman Schmidt, Jose Maria Velasco, Jim Ablett, Jon Dart, Andrey Chilantiev, Quoc Vuong.
-Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt). 
-Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt) 
+Firenzina is a clone of Fire 2.2 xTreme by Kranium (Norman Schmidt).
+Firenzina is a derivative (via Fire) of FireBird by Kranium (Norman Schmidt)
 and Sentinel (Milos Stanisavljevic). Firenzina is based (via Fire and FireBird)
 on Ippolit source code: http://ippolit.wikispaces.com/
 Ippolit authors: Yakov Petrovich Golyadkin, Igor Igorovich Igoronov,
-and Roberto Pescatore 
+and Roberto Pescatore
 Ippolit copyright: (C) 2009 Yakov Petrovich Golyadkin
 Ippolit date: 92th and 93rd year from Revolution
 Ippolit owners: PUBLICDOMAIN (workers)
@@ -29,64 +29,36 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 *******************************************************************************/
+#pragma once
+
 #include "fire.h" // Added by YC on 1/9/2014
+
 static int SlabNumber = -1;
 static bool LargeSlab = false;
 
-static uint8 *SlabRootLoc = NULL;
-static uint8 *CurrentSlabLoc;
-static sint64 CurrentSlabSize = 0;
+static uint8_t *SlabRootLoc = NULL;
+static uint8_t *CurrentSlabLoc;
+static int64_t CurrentSlabSize = 0;
 
 typedef struct
     {
-    sint16 Value;
-    uint8 token, flags;
+    int16_t Value;
+    uint8_t token, flags;
     } typeMaterial;
 SlabDeclare2(typeMaterial, Material, 419904);
 
 SlabDeclare1(typeMM, RookMM, 64);
 SlabDeclare1(typeMM, BishopMM, 64);
-SlabDeclare2(uint64, MMOrtho, 102400);
-SlabDeclare2(uint64, MMDiag, 5248);
+SlabDeclare2(uint64_t, MMOrtho, 102400);
+SlabDeclare2(uint64_t, MMDiag, 5248);
 
 typePos RootPosition[MaxCPUs][RPperCPU];
 typePos RootPosition0[1], NullParent[1];
 
-#ifdef OneDimensional
-#ifdef MultiplePosGain
-SlabDeclare2(sint16, MaxPositionalGain, MaxCPUs * 0x10 * 010000);
-#define MaxPosGain(piece, mos)                                        \
-	MaxPositionalGain[Position->cpu * 0x10 * 010000 + (piece) * 010000 + (mos)]
-#else
-SlabDeclare2(sint16, MaxPositionalGain, 0x10 *010000);
-#define MaxPosGain(piece, mos) MaxPositionalGain[(piece) * 010000 + (mos)]
-#endif
-#define HistoryValue(P, M) HistoryPITo (P, P->sq[From (M)],To (M))
-#ifdef MultipleHistory
-SlabDeclare2(uint16, History, MaxCPUs * 0x10 * 0100);
-#define HistoryPITo(P, PI, To) History[P->cpu * 0x10 * 0100 + 0100 * (PI) + (To)]
-#else
-SlabDeclare2(uint16, History, 0x10 * 0100);
-#define HistoryPITo(P, PI, To) History[(PI) * 0100 + (To)]
-#endif
-SlabDeclare2(sint32, PieceSquareValue, 0x10 * 0100);
-#define PST(pi, sq) PieceSquareValue[(pi) * 0100 + (sq)]
-#else
-#ifdef MultiplePosGain
-sint16 MaxPositionalGain[MaxCPUs][0x10][010000];
-#define MaxPosGain(piece, mos) MaxPositionalGain[Position->cpu][piece][mos]
-#else
-sint16 MaxPositionalGain[0x10][010000];
+int16_t MaxPositionalGain[0x10][010000];
 #define MaxPosGain(piece, mos) MaxPositionalGain[piece][mos]
-#endif
 #define HistoryValue(P, M) HistoryPITo (P, P->sq[From (M)],To (M))
-#ifdef MultipleHistory
-uint16 History[MaxCPUs][0x10][0100];
-#define HistoryPITo(P, PI, To) History[P->cpu][PI][To]
-#else
-uint16 History[0x10 * 0100];
-#define HistoryPITo(P, PI, To) History[PI][To]
-#endif
-sint32 PieceSquareValue[0x10][0100];
+uint16_t History[0x10 * 0100];
+#define HistoryPITo(P, PI, To) History[(PI) * 0100 + (To)]
+int32_t PieceSquareValue[0x10][0100];
 #define PST(pi, sq) PieceSquareValue[pi][sq]
-#endif
