@@ -32,7 +32,7 @@ PREFIX = /usr/local
 BINDIR = $(PREFIX)/bin
 
 ### Built-in benchmark for pgo-builds
-PGOBENCH = ./$(EXE)
+PGOBENCH = (echo bench ; echo quit) | ./$(EXE)
 ### Object files
 OBJS = main.o \
        50move.o \
@@ -166,9 +166,6 @@ ifeq ($(optimize),yes)
 	ifeq ($(debug),no)
 		CFLAGS += -flto
 		LDFLAGS += $(CFLAGS)
-	endif
-	ifeq ($(COMP),clang)
-		LDFLAGS += -fuse-ld=gold
 	endif
 endif
 
