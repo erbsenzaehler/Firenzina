@@ -66,7 +66,6 @@ OBJS = main.o \
        search.o \
        SEE.o \
        set_position.o \
-       signals.o \
        slab_memory.o \
        SMP.o \
        SMP_init.o \

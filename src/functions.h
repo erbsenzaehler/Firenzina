@@ -180,4 +180,3 @@ void QuitEvalHash();
 void MagicMultInit();
 static void FillSlab();
 void BenchMark(typePos*, char*);
-void SDBenchMark(typePos*, char *);

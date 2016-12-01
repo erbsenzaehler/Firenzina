@@ -345,10 +345,6 @@ static void ParseInput(typePos *Position, char *I)
         BenchMark(Position, "go depth 13");
     else if (!memcmp(I, "benchmark", 9))
         BenchMark(Position, I + 10);
-	if (!strcmp(I, "sd-bench"))
-        SDBenchMark(Position, "go depth 13");
-    else if (!memcmp(I, "benchmark", 9))
-        SDBenchMark(Position, I + 10);
     if (!memcmp(I, "go", 2))
         {
         InitSearch(Position, I);
